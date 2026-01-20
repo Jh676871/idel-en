@@ -16,20 +16,16 @@ jobs:
         with:
           node-version: 20
           cache: npm
-          cache-dependency-path: neverland-academy/package-lock.json
+          cache-dependency-path: package-lock.json
 
       - name: Install
-        working-directory: neverland-academy
         run: npm ci
 
       - name: Lint
-        working-directory: neverland-academy
         run: npm run lint
 
       - name: Typecheck
-        working-directory: neverland-academy
         run: npx tsc -p tsconfig.json --noEmit
 
       - name: Build
-        working-directory: neverland-academy
         run: npm run build
