@@ -134,7 +134,7 @@ function CollectionContent() {
 
 export default function CollectionPage() {
   return (
-    <main className="min-h-screen bg-idle-purple text-white relative">
+    <main className="min-h-screen text-white relative">
       <Navbar />
       {/* Background Gradients */}
       <div className="fixed top-0 left-0 w-full h-full overflow-hidden pointer-events-none z-0">

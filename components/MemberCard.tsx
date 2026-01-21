@@ -1,7 +1,6 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { User } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Member } from "@/lib/constants";
 
@@ -42,15 +41,21 @@ export function MemberCard({ member, isSelected, onSelect, index }: MemberCardPr
       
       {/* Card Content - Glassmorphism */}
       <div className={cn(
-        "relative bg-black/40 backdrop-blur-md border border-white/10 p-6 rounded-xl flex flex-col items-center h-full transition-all duration-300",
-        isSelected ? "bg-black/60 border-white/30 ring-1 ring-white/20" : "hover:bg-black/60"
+        "relative bg-white/10 backdrop-blur-md border border-white/20 p-6 rounded-xl flex flex-col items-center h-full transition-all duration-300",
+        isSelected ? "bg-white/15 border-white/30 ring-1 ring-white/30" : "hover:bg-white/15"
       )}>
         <div className={cn(
-            "w-24 h-24 rounded-full mb-4 flex items-center justify-center overflow-hidden border-2 transition-all duration-300",
-            isSelected ? "border-white shadow-[0_0_15px_rgba(255,255,255,0.5)]" : "border-white/20 group-hover:border-white/50 bg-white/5"
-        )}>
-            {/* Placeholder for image */}
-            <User className="w-12 h-12 text-gray-400" />
+          "w-24 h-24 rounded-full mb-4 p-[2px] transition-all duration-300",
+          isSelected ? "shadow-[0_0_22px_rgba(255,255,255,0.35)]" : "group-hover:shadow-[0_0_22px_rgba(255,255,255,0.25)]"
+        )} style={{
+          background: `linear-gradient(135deg, ${member.colors.accent}, rgba(255,255,255,0.22))`
+        }}>
+          <div className={cn(
+            "w-full h-full rounded-full overflow-hidden border border-white/20 bg-white/10 backdrop-blur-md",
+            isSelected ? "border-white/35" : "group-hover:border-white/30"
+          )}>
+            {/* <!-- Replace with actual member photo here --> */}
+          </div>
         </div>
         
         <h3 className="text-xl font-bold font-orbitron text-white mb-1">{member.displayName}</h3>

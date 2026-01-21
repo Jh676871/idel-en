@@ -5,7 +5,7 @@ import { LyricDecoder } from "@/components/lyric-decoder/LyricDecoder";
 
 export default function LyricsPage() {
   return (
-    <main className="min-h-screen bg-idle-purple text-white">
+    <main className="min-h-screen text-white">
       <Navbar />
       <div className="pt-16">
         <LyricDecoder />

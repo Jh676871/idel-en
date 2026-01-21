@@ -287,7 +287,7 @@ export default function AdminPage() {
   };
 
   return (
-    <main className="min-h-screen bg-idle-purple text-white relative">
+    <main className="min-h-screen text-white relative">
       <Navbar />
       <div className="max-w-4xl mx-auto pt-24 pb-28 px-4">
         <div className="text-[11px] font-mono tracking-[0.35em] text-gray-400 mb-2">ADMIN / AI MISSION MAKER</div>

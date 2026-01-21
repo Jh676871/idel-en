@@ -49,13 +49,27 @@ export default function RootLayout({
   return (
     <html lang="zh-Hant" className="dark">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${orbitron.variable} ${notoSansTc.variable} antialiased bg-idle-purple text-white pb-16 md:pb-0`}
+        className={`${geistSans.variable} ${geistMono.variable} ${orbitron.variable} ${notoSansTc.variable} antialiased text-white pb-16 md:pb-0`}
       >
-        <LearningProvider>
-          <Passport />
-          {children}
-          <BottomNav />
-        </LearningProvider>
+        <div className="fixed inset-0 -z-10">
+          <picture>
+            <source media="(min-width: 768px)" srcSet="/assets/images/bg_desktop.webp" />
+            <img
+              src="/assets/images/bg_mobile.webp"
+              alt=""
+              className="absolute inset-0 h-full w-full object-cover"
+            />
+          </picture>
+          <div className="absolute inset-0 bg-[#1a0033]/60 backdrop-blur-[25px]" />
+        </div>
+
+        <div className="relative z-10">
+          <LearningProvider>
+            <Passport />
+            {children}
+            <BottomNav />
+          </LearningProvider>
+        </div>
       </body>
     </html>
   );

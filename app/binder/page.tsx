@@ -36,7 +36,7 @@ export default function BinderPage() {
   const progressPercent = Math.round((uniqueUnlocked / totalCards) * 100);
 
   return (
-    <main className="min-h-screen bg-[#120024] text-white relative overflow-hidden">
+    <main className="min-h-screen text-white relative overflow-hidden">
       <Navbar />
       
       {/* Background Texture - Leather Binder Look */}

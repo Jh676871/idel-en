@@ -19,7 +19,7 @@ export default function Home() {
   };
 
   return (
-    <main className="min-h-screen bg-idle-purple text-white overflow-x-hidden selection:bg-idle-pink selection:text-white relative transition-colors duration-1000">
+    <main className="min-h-screen text-white overflow-x-hidden selection:bg-idle-pink selection:text-white relative transition-colors duration-1000">
       {/* Dynamic Background Overlay */}
       <div 
         className="fixed inset-0 pointer-events-none transition-opacity duration-1000 z-0 opacity-20"

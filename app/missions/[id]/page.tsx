@@ -18,11 +18,11 @@ export default function MissionPlayerPage() {
   }, [missions, params?.id]);
 
   return (
-    <main className="min-h-screen bg-idle-purple text-white relative">
+    <main className="min-h-screen text-white relative">
       <Navbar />
       <div className="max-w-6xl mx-auto pt-24 pb-28 px-4">
         {!mission ? (
-          <div className="bg-white/5 rounded-2xl border border-white/10 p-8">
+          <div className="bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 p-8">
             <div className="text-xl font-orbitron font-bold">找不到曲目</div>
             <div className="text-gray-400 text-sm mt-2">回到「今日演出曲目」挑一首來練吧。</div>
             <div className="mt-5">

@@ -8,7 +8,7 @@ export default function MissionsPage() {
   const { missions, removeMission, setCurrentMission } = useLearning();
 
   return (
-    <main className="min-h-screen bg-idle-purple text-white relative">
+    <main className="min-h-screen text-white relative">
       <Navbar />
       <div className="max-w-6xl mx-auto pt-24 pb-28 px-4">
         <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-8">
@@ -26,13 +26,13 @@ export default function MissionsPage() {
         </div>
 
         {missions.length === 0 ? (
-          <div className="bg-white/5 rounded-2xl border border-white/10 p-10 text-center text-gray-300">
+          <div className="bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 p-10 text-center text-gray-300">
             後台目前空空的... 快去 Admin 區挑幾首酷歌，準備今天的特訓吧！
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {missions.map((m) => (
-              <div key={m.id} className="bg-white/5 rounded-2xl border border-white/10 p-6">
+              <div key={m.id} className="bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 p-6">
                 <div className="flex items-start justify-between gap-4">
                   <div>
                     <h2 className="text-xl font-orbitron font-bold">{m.title}</h2>

@@ -9,7 +9,7 @@ export default function ChatPage() {
   const { currentMission } = useLearning();
 
   return (
-    <main className="min-h-screen bg-idle-purple text-white relative overflow-hidden">
+    <main className="min-h-screen text-white relative overflow-hidden">
         <Navbar />
         
         {/* Background Elements */}
