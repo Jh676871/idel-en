@@ -260,6 +260,21 @@ body {
   will-change: opacity, filter;
 }
 
+.animate-border-pulse {
+  animation: border-pulse 1600ms ease-in-out infinite;
+  will-change: box-shadow;
+}
+
+@keyframes border-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 22px rgba(255, 0, 127, 0.55), 0 0 44px rgba(255, 215, 0, 0.20);
+  }
+  50% {
+    box-shadow: 0 0 32px rgba(255, 0, 127, 0.75), 0 0 62px rgba(255, 215, 0, 0.28);
+  }
+}
+
 @keyframes flicker {
   0% {
     opacity: 1;

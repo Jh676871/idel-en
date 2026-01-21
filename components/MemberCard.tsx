@@ -31,25 +31,49 @@ export function MemberCard({ member, isSelected, onSelect, index }: MemberCardPr
         isSelected ? "scale-105 -translate-y-2" : ""
       )}
     >
-      {/* Glowing background effect */}
-      <div 
+      <div
         className={cn(
-          "absolute -inset-0.5 rounded-xl blur opacity-30 group-hover:opacity-100 transition duration-500",
-          isSelected ? "opacity-100" : "",
-          `bg-gradient-to-r ${member.colors.gradient}`
-        )} 
+          "absolute -inset-1 rounded-2xl blur-2xl transition-opacity duration-500",
+          isSelected ? "opacity-100" : "opacity-55 group-hover:opacity-80"
+        )}
         style={{
-            background: isSelected 
-                ? `linear-gradient(to right, ${member.colors.primary}, ${member.colors.accent})`
-                : undefined
+          background: `radial-gradient(circle at 30% 20%, ${member.colors.accent}40, transparent 55%), radial-gradient(circle at 70% 80%, ${member.colors.primary}66, transparent 60%)`,
         }}
       />
-      
-      {/* Card Content - Glassmorphism */}
-      <div className={cn(
-        "relative bg-black/60 backdrop-blur-sm border border-idle-pink/30 p-6 rounded-xl flex flex-col items-center h-full transition-all duration-300",
-        isSelected ? "bg-black/70 border-idle-pink/60 ring-1 ring-idle-pink/25" : "hover:bg-black/65"
-      )}>
+
+      <div
+        className={cn(
+          "relative rounded-2xl bg-gradient-to-r from-idle-pink/70 via-idle-gold/50 to-idle-pink/70",
+          isSelected
+            ? "p-[2px] animate-border-pulse shadow-[0_0_24px_rgba(255,0,127,0.55),0_0_46px_rgba(255,215,0,0.22)]"
+            : "p-[1px] shadow-[0_0_16px_rgba(255,0,127,0.22)]"
+        )}
+      >
+        <div
+          className={cn(
+            "relative rounded-2xl overflow-hidden bg-black/60 backdrop-blur-md p-6 flex flex-col items-center transition-colors duration-300 min-h-[280px] sm:min-h-[260px]",
+            isSelected ? "bg-black/70" : "group-hover:bg-black/65"
+          )}
+        >
+          {!avatarError && (
+            <img
+              src={avatarSrc}
+              alt=""
+              className={cn(
+                "absolute inset-0 w-full h-full object-cover scale-150 blur-xl transition-opacity duration-300 pointer-events-none select-none",
+                isSelected ? "opacity-40" : "opacity-20"
+              )}
+              loading="lazy"
+              onError={() => setAvatarErrorSrc(avatarSrc)}
+            />
+          )}
+          <div
+            className="absolute inset-0 pointer-events-none"
+            style={{
+              background: `linear-gradient(180deg, rgba(0,0,0,0.25), rgba(0,0,0,0.75))`,
+            }}
+          />
+
         <div className={cn(
           "w-24 h-24 rounded-full mb-4 p-[2px] transition-all duration-300",
           isSelected ? "shadow-[0_0_22px_rgba(255,255,255,0.35)]" : "group-hover:shadow-[0_0_22px_rgba(255,255,255,0.25)]"
@@ -76,8 +100,8 @@ export function MemberCard({ member, isSelected, onSelect, index }: MemberCardPr
           </div>
         </div>
         
-        <h3 className="text-xl font-bold font-orbitron text-white mb-1">{member.displayName}</h3>
-        <p className="text-sm text-gray-200/80 tracking-widest whitespace-nowrap">{member.role}</p>
+        <h3 className="text-xl font-bold font-orbitron text-white mb-1 text-shadow-soft">{member.displayName}</h3>
+        <p className="text-sm text-gray-200/85 tracking-widest whitespace-nowrap text-shadow-soft">{member.role}</p>
         
         <div className={cn(
             "mt-4 transition-all duration-300",
@@ -89,6 +113,7 @@ export function MemberCard({ member, isSelected, onSelect, index }: MemberCardPr
            )}>
              {isSelected ? "已選擇" : "選擇"}
            </span>
+        </div>
         </div>
       </div>
     </motion.div>
