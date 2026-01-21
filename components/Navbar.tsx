@@ -2,14 +2,13 @@
 
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { Home, Target, Heart, Grid, Menu } from "lucide-react";
+import { Target, Menu, Music, MessageCircle } from "lucide-react";
 import { useState } from "react";
 
 const navItems = [
-  { en: "HOME", zh: "我的舞台", href: "/", icon: Home },
+  { en: "LYRICS", zh: "歌詞解碼", href: "/lyrics", icon: Music },
+  { en: "CHAT", zh: "AI 偶像對話", href: "/chat", icon: MessageCircle },
   { en: "MISSIONS", zh: "巡迴挑戰", href: "/missions", icon: Target },
-  { en: "WORDS", zh: "靈魂單字", href: "/collection", icon: Heart },
-  { en: "BINDER", zh: "寶藏盒", href: "/binder", icon: Grid },
 ];
 
 export function Navbar() {

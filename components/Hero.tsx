@@ -18,17 +18,15 @@ export function Hero() {
             transition={{ duration: 0.8 }}
             className="font-orbitron font-black text-white tracking-[-0.08em] leading-[0.92] text-[clamp(3rem,9vw,4.25rem)] sm:text-6xl md:text-7xl lg:text-8xl transform-gpu skew-y-[-3deg]"
           >
-            <div className="flex flex-row items-center justify-center gap-2">
-              <span
-                className="glitch glitch-hero whitespace-pre-line md:whitespace-nowrap"
-                data-text={"和 I-DLE 一起\n閃耀舞台！"}
-              >
-                和 <span className="glitch-rgb" data-text="I-DLE">I-DLE</span> 一起
-                <br className="block md:hidden" />
-                閃耀<span className="whitespace-nowrap">舞台</span>！
-              </span>
-              <span className="self-end inline-block text-[#ff007f] drop-shadow-[0_0_14px_rgba(255,0,127,0.9)] flicker-fast">✨</span>
-            </div>
+            <span
+              className="glitch glitch-hero whitespace-pre-line md:whitespace-nowrap inline-block"
+              data-text={"和 I-DLE 一起\n閃耀舞台！✨"}
+            >
+              和 <span className="glitch-rgb" data-text="I-DLE">I-DLE</span> 一起
+              <br className="block md:hidden" />
+              閃耀<span className="whitespace-nowrap">舞台</span>！
+              <span className="inline-block text-[#ff007f] drop-shadow-[0_0_14px_rgba(255,0,127,0.9)] flicker-fast align-middle">✨</span>
+            </span>
           </motion.h1>
 
           <motion.div
