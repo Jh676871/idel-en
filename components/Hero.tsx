@@ -18,15 +18,24 @@ export function Hero() {
             transition={{ duration: 0.8 }}
             className="font-orbitron font-black text-white tracking-[-0.08em] leading-[0.92] text-[clamp(3rem,9vw,4.25rem)] sm:text-6xl md:text-7xl lg:text-8xl transform-gpu skew-y-[-3deg]"
           >
-            <span
-              className="glitch glitch-hero whitespace-pre-line md:whitespace-nowrap inline-block"
-              data-text={"和 I-DLE 一起\n閃耀舞台！✨"}
-            >
-              和 <span className="glitch-rgb" data-text="I-DLE">I-DLE</span> 一起
-              <br className="block md:hidden" />
-              閃耀<span className="whitespace-nowrap">舞台</span>！
-              <span className="inline-block text-[#ff007f] drop-shadow-[0_0_14px_rgba(255,0,127,0.9)] flicker-fast align-middle">✨</span>
-            </span>
+            <div className="flex items-center justify-center gap-2 md:gap-4">
+              {/* Left Icon - Desktop Only */}
+              <span className="hidden md:inline-block text-[#ff007f] drop-shadow-[0_0_14px_rgba(255,0,127,0.9)] flicker-fast select-none">✨</span>
+
+              <span
+                className="glitch glitch-hero whitespace-pre-line md:whitespace-nowrap inline-block"
+                data-text={"和 I-DLE 一起\n閃耀舞台！"}
+              >
+                和 <span className="glitch-rgb" data-text="I-DLE">I-DLE</span> 一起
+                <br className="block md:hidden" />
+                閃耀<span className="whitespace-nowrap">舞台</span>！
+                {/* Right Icon - Mobile Only */}
+                <span className="inline-block md:hidden text-[#ff007f] drop-shadow-[0_0_14px_rgba(255,0,127,0.9)] flicker-fast align-middle">✨</span>
+              </span>
+
+              {/* Right Icon - Desktop Only */}
+              <span className="hidden md:inline-block text-[#ff007f] drop-shadow-[0_0_14px_rgba(255,0,127,0.9)] flicker-fast select-none">✨</span>
+            </div>
           </motion.h1>
 
           <motion.div
