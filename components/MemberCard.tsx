@@ -110,8 +110,8 @@ export function MemberCard({ member, isSelected, onSelect, index }: MemberCardPr
             </div>
           </div>
 
-          <h3 className="relative z-10 text-xl font-bold font-orbitron text-white mb-1 text-shadow-soft">{member.displayName}</h3>
-          <p className="relative z-10 text-sm text-gray-200/85 tracking-widest whitespace-nowrap text-shadow-soft">{member.role}</p>
+          <h3 className="relative z-10 text-xl font-bold font-orbitron text-white mb-1 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">{member.displayName}</h3>
+          <p className="relative z-10 text-sm text-gray-200/90 tracking-widest whitespace-nowrap drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]">{member.role}</p>
 
           <div
             className={cn(
