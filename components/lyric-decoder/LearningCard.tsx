@@ -49,136 +49,160 @@ export function LearningCard({ wordData, onClose }: LearningCardProps) {
   const saved = isSaved(wordData.word);
 
   return (
-    <motion.div
-      initial={{ opacity: 0, scale: 0.9, y: 20 }}
-      animate={{ opacity: 1, scale: 1, y: 0 }}
-      exit={{ opacity: 0, scale: 0.9, y: 20 }}
-      className="fixed inset-0 z-50 flex items-center justify-center px-4"
-    >
-      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
+    <div className="fixed inset-0 z-50 flex items-end justify-center pointer-events-none">
+      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm pointer-events-auto" onClick={onClose} />
       
-      <div className="relative w-full max-w-md bg-[#1a0033] border border-idle-pink/50 rounded-2xl shadow-[0_0_30px_rgba(255,0,127,0.3)] overflow-hidden">
+      <motion.div
+        initial={{ y: "100%" }}
+        animate={{ y: 0 }}
+        exit={{ y: "100%" }}
+        transition={{ type: "spring", damping: 25, stiffness: 200 }}
+        className="pointer-events-auto relative w-full max-w-lg bg-[#1a0033] border-t-2 border-idle-pink/50 rounded-t-3xl shadow-[0_-10px_40px_rgba(255,0,127,0.3)] overflow-hidden"
+      >
         {/* Decorative header */}
         <div className="h-2 bg-gradient-to-r from-idle-pink via-idle-gold to-idle-pink" />
         
-        <div className="p-6">
+        <div className="p-8 pb-12">
           <button 
             onClick={onClose}
-            className="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors"
+            className="absolute top-6 right-6 text-gray-400 hover:text-white transition-colors"
           >
             <X className="w-6 h-6" />
           </button>
 
           {/* Word Header */}
-          <div className="flex flex-col items-center mb-6">
-            <h2 className="text-4xl font-bold font-orbitron text-white mb-2 tracking-wider">
+          <div className="flex flex-col items-center mb-8">
+            <h2 className="text-5xl font-bold font-orbitron text-white mb-3 tracking-wider glitch-text">
               {wordData.word}
             </h2>
-            <div className="flex items-center space-x-3 text-gray-300">
-              <span className="font-mono text-lg text-idle-gold">{wordData.phonetic}</span>
+            <div className="flex items-center space-x-4 text-gray-300">
+              <span className="font-mono text-xl text-idle-gold">{wordData.phonetic}</span>
               <button 
                 onClick={handleSpeak}
-                className="p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
+                className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors border border-white/10 group"
               >
-                <Volume2 className="w-5 h-5 text-idle-pink" />
+                <Volume2 className="w-5 h-5 text-idle-pink group-hover:scale-110 transition-transform" />
+                <span className="text-sm font-bold text-white">Listen</span>
               </button>
             </div>
           </div>
 
-          {/* Definitions */}
-          <div className="space-y-4 mb-8">
-            <div className="bg-white/5 p-4 rounded-xl border border-white/10">
-              <span className="text-xs uppercase text-gray-400 font-bold tracking-wider">英文解釋</span>
-              <p className="text-white mt-1">{wordData.definitionEn}</p>
+          {/* Definitions Grid */}
+          <div className="grid grid-cols-2 gap-4 mb-8">
+            <div className="bg-black/40 p-5 rounded-2xl border border-white/10 backdrop-blur-md">
+              <span className="text-xs uppercase text-idle-pink font-bold tracking-widest mb-2 block">ENGLISH</span>
+              <p className="text-white leading-relaxed">{wordData.definitionEn}</p>
             </div>
-            <div className="bg-white/5 p-4 rounded-xl border border-white/10">
-              <span className="text-xs uppercase text-gray-400 font-bold tracking-wider">中文解釋</span>
-              <p className="text-white mt-1">{wordData.definitionCn}</p>
+            <div className="bg-black/40 p-5 rounded-2xl border border-white/10 backdrop-blur-md">
+              <span className="text-xs uppercase text-idle-pink font-bold tracking-widest mb-2 block">CHINESE</span>
+              <p className="text-white leading-relaxed font-noto-sans-tc">{wordData.definitionCn}</p>
             </div>
           </div>
 
+          {/* Idol Private Example */}
+          {wordData.idolExample && (
+            <div className="mb-8 relative overflow-hidden rounded-2xl border border-idle-gold/30 bg-gradient-to-r from-idle-gold/10 to-transparent p-6">
+              <div className="absolute top-0 left-0 w-1 h-full bg-idle-gold" />
+              <div className="flex gap-4">
+                 <div className="flex-shrink-0 w-12 h-12 rounded-full bg-gray-700 overflow-hidden border-2 border-idle-gold">
+                   {/* Placeholder for Member Avatar - could be dynamic based on speaker name in example */}
+                   <div className="w-full h-full bg-idle-gold/50 flex items-center justify-center text-xs font-bold">IDLE</div>
+                 </div>
+                 <div>
+                   <span className="text-xs uppercase text-idle-gold font-bold tracking-widest mb-1 block">IDOL PRIVATE TALK</span>
+                   <p className="text-white italic text-lg">"{wordData.idolExample.split('"')[1]}"</p>
+                   <p className="text-gray-400 text-sm mt-1">- {wordData.idolExample.split(':')[0]}</p>
+                 </div>
+              </div>
+            </div>
+          )}
+
+          {/* Simulated Recording Button */}
+          <div className="flex justify-center mb-8">
+             <button className="flex flex-col items-center gap-2 group">
+               <div className="w-16 h-16 rounded-full bg-white/5 border-2 border-idle-pink/50 flex items-center justify-center group-hover:bg-idle-pink/20 group-hover:scale-110 transition-all cursor-pointer">
+                 <div className="w-8 h-8 rounded-full bg-idle-pink animate-pulse" />
+               </div>
+               <span className="text-xs text-gray-400 uppercase tracking-widest group-hover:text-white">Tap to Record</span>
+             </button>
+          </div>
+
           {/* Challenge Section */}
-          <div className="bg-black/30 p-5 rounded-xl border border-idle-gold/30 relative overflow-hidden group">
-            <div className="absolute top-0 left-0 w-1 h-full bg-idle-gold" />
-            <h3 className="text-idle-gold font-bold mb-3 uppercase text-sm tracking-widest flex items-center">
-              拍檔小考
+          <div className="bg-white/5 p-6 rounded-2xl border border-white/10">
+            <h3 className="text-idle-pink font-bold mb-4 flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-idle-pink" />
+              NEVERLAND CHALLENGE
             </h3>
             
-            <p className="text-lg text-gray-200 mb-4">
-              {wordData.challenge.sentence.split('___').map((part, i, arr) => (
+            <div className="mb-6 text-lg text-white font-medium text-center">
+              "{wordData.challenge.sentence.split(wordData.challenge.answer).map((part, i, arr) => (
                 <span key={i}>
                   {part}
                   {i < arr.length - 1 && (
-                    <span className="inline-block w-24 border-b-2 border-white/30 mx-1 text-center font-bold text-idle-pink">
-                       ?
+                    <span className="inline-block min-w-[80px] border-b-2 border-white/30 mx-2 text-idle-pink font-bold">
+                       {feedback === 'correct' ? wordData.challenge.answer : '_____'}
                     </span>
                   )}
                 </span>
-              ))}
-            </p>
+              ))}"
+            </div>
 
-            <div className="flex space-x-2">
+            <div className="flex gap-3">
               <input
                 type="text"
                 value={userAnswer}
                 onChange={(e) => setUserAnswer(e.target.value)}
-                placeholder="輸入缺少的單字…"
-                className="flex-1 bg-white/10 border border-white/20 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-idle-pink transition-colors"
+                placeholder="Type the missing word..."
+                className="flex-1 bg-black/50 border border-white/20 rounded-xl px-4 py-3 text-white focus:border-idle-pink focus:outline-none transition-colors"
                 onKeyDown={(e) => e.key === 'Enter' && checkAnswer()}
               />
               <button
                 onClick={checkAnswer}
-                className="bg-idle-pink text-white px-4 py-2 rounded-lg font-bold hover:bg-pink-600 transition-colors"
+                disabled={feedback === 'correct'}
+                className="bg-idle-pink hover:bg-pink-600 text-white font-bold px-6 py-3 rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed min-w-[100px]"
               >
-                檢查
+                {feedback === 'correct' ? <CheckCircle /> : 'Check'}
               </button>
             </div>
-
-            {/* Feedback Message */}
-            <AnimatePresence>
-              {feedback !== 'idle' && (
-                <motion.div
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: 'auto' }}
-                  className={cn(
-                    "mt-3 flex items-center space-x-2 text-sm font-bold",
-                    feedback === 'correct' ? "text-green-400" : "text-red-400"
-                  )}
-                >
-                  {feedback === 'correct' ? (
-                    <>
-                      <CheckCircle className="w-4 h-4" />
-                      <span>答對了！超有舞台感！</span>
-                    </>
-                  ) : (
-                    <>
-                      <AlertCircle className="w-4 h-4" />
-                      <span>再試一次～妳可以的！</span>
-                    </>
-                  )}
-                </motion.div>
-              )}
-            </AnimatePresence>
+            
+            {feedback === 'incorrect' && (
+               <motion.div 
+                 initial={{ opacity: 0, y: -10 }}
+                 animate={{ opacity: 1, y: 0 }}
+                 className="mt-3 text-red-400 flex items-center gap-2 text-sm justify-center"
+               >
+                 <AlertCircle size={14} /> Try again!
+               </motion.div>
+            )}
           </div>
 
-          {/* Collection Button */}
-          <div className="mt-6 flex justify-center">
+          {/* Save Button */}
+          <div className="mt-8 flex justify-center">
             <button
               onClick={handleSave}
               disabled={saved}
               className={cn(
-                "flex items-center space-x-2 px-6 py-3 rounded-full font-bold transition-all duration-300",
+                "flex items-center gap-2 px-8 py-3 rounded-full font-bold transition-all transform hover:scale-105",
                 saved 
-                  ? "bg-gray-700 text-gray-400 cursor-default"
-                  : "bg-gradient-to-r from-idle-purple to-idle-pink text-white hover:scale-105 shadow-lg shadow-purple-500/30"
+                  ? "bg-green-500/20 text-green-400 border border-green-500/50"
+                  : "bg-white text-black hover:bg-gray-200"
               )}
             >
-              <Heart className={cn("w-5 h-5", saved ? "fill-gray-400" : "fill-white animate-pulse")} />
-              <span className="whitespace-nowrap">{saved ? "已收進單字本" : "收進靈魂單字本"}</span>
+              {saved ? (
+                <>
+                  <CheckCircle size={18} />
+                  Saved to Binder
+                </>
+              ) : (
+                <>
+                  <Heart size={18} className={cn("text-idle-pink fill-current")} />
+                  Save to Binder
+                </>
+              )}
             </button>
           </div>
         </div>
-      </div>
-    </motion.div>
+      </motion.div>
+    </div>
   );
 }

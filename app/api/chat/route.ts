@@ -1,7 +1,8 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { NextResponse } from "next/server";
+import { AI_CONFIG } from "@/config/ai-config";
 
-const genAI = new GoogleGenerativeAI(process.env.GOOGLE_GEMINI_API_KEY || "");
+const genAI = new GoogleGenerativeAI(AI_CONFIG.apiKey);
 
 const SYSTEM_PROMPT = `
 妳現在的角色是 I-DLE 的成員。妳說話口氣要像熱情的姊姊。妳必須稱呼使用者為『翻譯官小助手』。妳目前的困境是：『世巡要開始了，我好緊張，怕英文說不好。』妳要拜託使用者陪妳練習。
@@ -18,7 +19,7 @@ Rules (must follow):
 
 export async function POST(req: Request) {
   try {
-    if (!process.env.GOOGLE_GEMINI_API_KEY) {
+    if (!AI_CONFIG.apiKey) {
       return NextResponse.json({ error: "Missing GOOGLE_GEMINI_API_KEY" }, { status: 500 });
     }
 
@@ -55,7 +56,7 @@ export async function POST(req: Request) {
     }
 
     const message = maybeMessage;
-    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+    const model = genAI.getGenerativeModel({ model: AI_CONFIG.model });
 
     const chat = model.startChat({
       history: [

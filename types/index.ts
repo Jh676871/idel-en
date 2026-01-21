@@ -68,6 +68,12 @@ export interface ProcessedMission {
     options: string[];
     correctAnswer: string;
   }>;
+  scenarioDialogue?: {
+    character: string; // e.g., "Yuqi"
+    text: string; // "Did you see my red hair? It's so cool, right?"
+    translation: string; // Chinese translation
+    question: string; // Interactive question for the user
+  };
   mentor?: string; // Assigned member mentor
   status?: "locked" | "new" | "completed"; // Mission progress
 }

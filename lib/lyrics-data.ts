@@ -3,11 +3,36 @@ export interface WordData {
   phonetic: string;
   definitionEn: string;
   definitionCn: string;
+  idolExample?: string; // New field for 3.0 content
   challenge: {
     sentence: string; // "She has a lot of [blank]."
     answer: string;
   };
 }
+
+export interface QuizQuestion {
+  question: string;
+  options: string[];
+  correctAnswer: string;
+}
+
+export const QUEENCARD_QUIZ: QuizQuestion[] = [
+  {
+    question: "What does 'Queencard' refer to in the song?",
+    options: ["A royal invitation", "The most popular girl", "A credit card", "A game card"],
+    correctAnswer: "The most popular girl"
+  },
+  {
+    question: "Where is Soyeon twerking?",
+    options: ["On the stage", "On the runway", "In the car", "At home"],
+    correctAnswer: "On the runway"
+  },
+  {
+    question: "What does Minnie want you to look at?",
+    options: ["Her shoes", "The spotlight", "The mirror", "The phone"],
+    correctAnswer: "The spotlight"
+  }
+];
 
 export interface LyricLine {
   id: string;
@@ -29,6 +54,7 @@ export const QUEENCARD_LYRICS: LyricLine[] = [
         phonetic: "/kwiːn kɑːrd/",
         definitionEn: "A slang term (Konglish) referring to the most popular or attractive girl at school/party.",
         definitionCn: "校花／最受歡迎的女孩（韓式英語 slang）",
+        idolExample: "Soyeon: \"Hey, don't be shy. You are the Queencard of your own life!\"",
         challenge: {
           sentence: "Everyone wants to be the ___ of the party.",
           answer: "Queencard"
@@ -47,6 +73,7 @@ export const QUEENCARD_LYRICS: LyricLine[] = [
         phonetic: "/ˈrʌn.weɪ/",
         definitionEn: "A long platform that models walk on to show off clothes.",
         definitionCn: "T 台／秀場跑道",
+        idolExample: "Miyeon: \"Walking on the runway makes me feel like a princess.\"",
         challenge: {
           sentence: "The model walked down the ___ with confidence.",
           answer: "runway"
@@ -77,6 +104,7 @@ export const QUEENCARD_LYRICS: LyricLine[] = [
             phonetic: "/ˈspɒt.laɪt/",
             definitionEn: "A strong light that shines on a stage performer; center of attention.",
             definitionCn: "聚光燈／關注焦點",
+            idolExample: "Minnie: \"I love it when the spotlight hits me during the intro!\"",
             challenge: {
                 sentence: "She loves being in the ___.",
                 answer: "spotlight"

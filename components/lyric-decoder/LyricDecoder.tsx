@@ -1,8 +1,9 @@
 "use client";
 
-import { QUEENCARD_LYRICS, LyricLine, WordData } from "@/lib/lyrics-data";
+import { QUEENCARD_LYRICS, QUEENCARD_QUIZ, LyricLine, WordData } from "@/lib/lyrics-data";
 import { useState, useEffect, useRef } from "react";
 import { LearningCard } from "./LearningCard";
+import { QuizModal } from "./QuizModal";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import YouTube, { YouTubeProps } from "react-youtube";
@@ -16,6 +17,7 @@ export function LyricDecoder() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [activeLineId, setActiveLineId] = useState<string | null>(null);
   const [isStageClear, setIsStageClear] = useState(false);
+  const [showQuiz, setShowQuiz] = useState(false);
   const [showGacha, setShowGacha] = useState(false);
   
   const scrollContainerRef = useRef<HTMLDivElement>(null);
@@ -83,6 +85,11 @@ export function LyricDecoder() {
   };
 
   const handleStageClear = () => {
+    setShowQuiz(true); // Show Quiz first
+  };
+
+  const handleQuizComplete = () => {
+    setShowQuiz(false);
     setIsStageClear(true);
     addTicket(1); // Reward for finishing
   };
@@ -212,6 +219,12 @@ export function LyricDecoder() {
             onClose={handleCloseCard} 
           />
         )}
+        {showQuiz && (
+           <QuizModal 
+             questions={QUEENCARD_QUIZ} 
+             onComplete={handleQuizComplete} 
+           />
+        )}
       </AnimatePresence>
 
       <GachaModal 
@@ -285,12 +298,13 @@ function LyricLineItem({ line, isActive, onWordClick }: { line: LyricLine, isAct
 
   return (
     <div className={cn(
-      "p-4 rounded-xl border transition-colors",
+      "p-4 rounded-xl border transition-all duration-300",
       isActive 
-        ? "bg-white/5 border-idle-neon/50 shadow-[0_0_15px_rgba(225,0,152,0.2)]" 
+        ? "bg-white/5 border-idle-neon/50 shadow-[0_0_15px_rgba(225,0,152,0.8)] glitch-active relative overflow-hidden" 
         : "bg-transparent border-transparent"
     )}>
-      <div className="flex items-center gap-3 mb-2">
+      {isActive && <div className="absolute inset-0 bg-gradient-to-r from-idle-neon/20 to-transparent pointer-events-none" />}
+      <div className="flex items-center gap-3 mb-2 relative z-10">
         {line.speaker && (
            <span className={cn(
              "text-xs px-2 py-0.5 rounded-full uppercase tracking-wider font-bold",

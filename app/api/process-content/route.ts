@@ -1,25 +1,44 @@
 import { GoogleGenerativeAI, Schema, SchemaType } from "@google/generative-ai";
 import { NextResponse } from "next/server";
+import { AI_CONFIG } from "@/config/ai-config";
 
-const genAI = new GoogleGenerativeAI(process.env.GOOGLE_GEMINI_API_KEY || "");
+const genAI = new GoogleGenerativeAI(AI_CONFIG.apiKey);
 
-const SYSTEM_PROMPT = `You are an expert ESL teacher for English learners.
+const SYSTEM_PROMPT = `妳是一位精通 K-pop 文化且專門教 12 歲女孩的英語專家。妳的任務是將 I-DLE 的歌詞解析為頂級教材。
+
+選詞策略：
+- 拋棄無聊的單字。挑選 5 個具有『Girl Power』、舞台感或時尚感的關鍵字。
+- 3.0 深度解析：針對每個單字，提供一個『偶像專屬例句』。例如：針對『Confidence』，例句要寫：『Soyeon says, your confidence makes you a Queencard.』
 
 Rules (must follow):
-- Output must be 100% English. Do NOT output Korean/Hangul or mixed-language text.
-- Extract 5-10 English learning keywords appropriate for the user's CEFR level.
-- For each keyword provide: definition (English), phonetic (IPA), and a member-themed example sentence (English).
+- Output JSON content must be 100% English. Do NOT output Korean/Hangul or mixed-language text.
+- Extract 5 English learning keywords appropriate for the user's CEFR level.
+- For each keyword provide: 
+  - definition (English)
+  - funny_definition (A witty, Gen-Z style definition)
+  - phonetic (IPA)
+  - example (Standard example)
+  - star_comment (The 'Idol Exclusive Example' mentioned above, e.g. "Soyeon says...")
 - Challenges must be in English:
   1) fillInTheBlank.sentence must be an English sentence containing exactly one blank "_____".
      fillInTheBlank.answer must be a single English word and must match one of the keywords.word exactly.
   2) definitionMatching.pairs[].word must be picked from keywords.word.
   3) chatChallenge.question must be an English question that nudges using the target words.
+  4) MV Context: Quiz questions should relate to MV vibes (e.g., "At 1:20 in the MV, what attitude do they show?").
 
 Respond ONLY in structured JSON format.`;
 
 type ProcessResult = {
   title: string;
-  keywords: Array<{ word: string; definition: string; phonetic: string; example: string; cefr: string }>;
+  keywords: Array<{ 
+    word: string; 
+    definition: string; 
+    funny_definition: string;
+    phonetic: string; 
+    example: string; 
+    star_comment: string;
+    cefr: string 
+  }>;
   challenges: {
     fillInTheBlank: { sentence: string; answer: string };
     definitionMatching: { pairs: Array<{ word: string; definition: string }> };
@@ -59,8 +78,10 @@ function coerceProcessResult(value: unknown): ProcessResult | null {
     return (
       typeof kr.word === "string" &&
       typeof kr.definition === "string" &&
+      typeof kr.funny_definition === "string" &&
       typeof kr.phonetic === "string" &&
       typeof kr.example === "string" &&
+      typeof kr.star_comment === "string" &&
       typeof kr.cefr === "string"
     );
   };
@@ -80,7 +101,7 @@ function validateEnglish(result: ProcessResult): { ok: true } | { ok: false; rea
     result.challenges.fillInTheBlank.sentence,
     result.challenges.fillInTheBlank.answer,
     result.challenges.chatChallenge.question,
-    ...result.keywords.flatMap((k) => [k.word, k.definition, k.phonetic, k.example, k.cefr]),
+    ...result.keywords.flatMap((k) => [k.word, k.definition, k.funny_definition, k.phonetic, k.example, k.star_comment, k.cefr]),
     ...result.challenges.definitionMatching.pairs.flatMap((p) => [p.word, p.definition]),
   ];
 
@@ -140,7 +161,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    if (!process.env.GOOGLE_GEMINI_API_KEY) {
+    if (!AI_CONFIG.apiKey) {
       return NextResponse.json({ error: "Missing GOOGLE_GEMINI_API_KEY" }, { status: 500 });
     }
 
@@ -171,11 +192,13 @@ export async function POST(req: Request) {
             properties: {
               word: { type: SchemaType.STRING },
               definition: { type: SchemaType.STRING },
+              funny_definition: { type: SchemaType.STRING },
               phonetic: { type: SchemaType.STRING },
               example: { type: SchemaType.STRING },
+              star_comment: { type: SchemaType.STRING },
               cefr: { type: SchemaType.STRING },
             },
-            required: ["word", "definition", "phonetic", "example", "cefr"],
+            required: ["word", "definition", "funny_definition", "phonetic", "example", "star_comment", "cefr"],
           },
         },
         challenges: {
@@ -223,7 +246,7 @@ export async function POST(req: Request) {
     };
 
     const model = genAI.getGenerativeModel({
-      model: "gemini-2.0-flash",
+      model: AI_CONFIG.model,
       generationConfig: {
         responseMimeType: "application/json",
         responseSchema,
@@ -232,7 +255,7 @@ export async function POST(req: Request) {
     });
 
     const repairModel = genAI.getGenerativeModel({
-      model: "gemini-2.0-flash",
+      model: AI_CONFIG.model,
       generationConfig: {
         responseMimeType: "application/json",
         responseSchema,
