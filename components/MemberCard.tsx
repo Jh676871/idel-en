@@ -51,8 +51,8 @@ export function MemberCard({ member, isSelected, onSelect, index }: MemberCardPr
       >
         <div
           className={cn(
-            "relative rounded-2xl overflow-hidden bg-black/60 backdrop-blur-md p-6 flex flex-col items-center transition-colors duration-300 min-h-[280px] sm:min-h-[260px]",
-            isSelected ? "bg-black/70" : "group-hover:bg-black/65"
+            "relative rounded-2xl overflow-hidden bg-black/40 backdrop-blur-md p-6 flex flex-col items-center transition-colors duration-300 min-h-[280px] sm:min-h-[260px]",
+            isSelected ? "bg-black/55" : "group-hover:bg-black/45"
           )}
         >
           {!avatarError && (

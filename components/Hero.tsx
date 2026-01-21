@@ -10,7 +10,7 @@ export function Hero() {
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-idle-pink/20 rounded-full blur-[100px] -z-20" />
       <div className="absolute top-0 right-0 w-[300px] h-[300px] bg-idle-purple/40 rounded-full blur-[80px] -z-20" />
 
-      <div className="w-full max-w-3xl md:-mt-6">
+      <div className="w-full max-w-3xl mt-10 sm:mt-8 md:mt-0 md:-mt-6">
         <motion.h1
           initial={{ opacity: 0, y: 18 }}
           animate={{ opacity: 1, y: 0 }}
