@@ -12,6 +12,7 @@ export function AdminIngest() {
   const [difficulty, setDifficulty] = useState<"auto" | 1 | 2 | 3>("auto");
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState<"idle" | "success" | "error" | "manual_input_needed">("idle");
+  const [message, setMessage] = useState("");
   const [manualLyrics, setManualLyrics] = useState("");
   const { addMission } = useLearning();
 
