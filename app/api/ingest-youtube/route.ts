@@ -1,9 +1,24 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import { GoogleGenerativeAI, Schema, SchemaType } from "@google/generative-ai";
 import { NextResponse } from "next/server";
 import { YoutubeTranscript } from "youtube-transcript";
 import { AI_CONFIG } from "@/config/ai-config";
 
 const genAI = new GoogleGenerativeAI(AI_CONFIG.apiKey);
+
+// Helper for safe JSON parsing
+function safeJsonParse(text: string) {
+  try {
+    return JSON.parse(text);
+  } catch {
+    const start = text.indexOf("{");
+    const end = text.lastIndexOf("}");
+    if (start >= 0 && end > start) {
+      const sliced = text.slice(start, end + 1);
+      return JSON.parse(sliced);
+    }
+    throw new Error("Model did not return valid JSON");
+  }
+}
 
 export async function POST(req: Request) {
   try {
@@ -34,6 +49,10 @@ export async function POST(req: Request) {
     } else {
         try {
           const transcript = await YoutubeTranscript.fetchTranscript(videoId);
+          // Defensive check: Ensure transcript is an array and has content
+          if (!transcript || !Array.isArray(transcript) || transcript.length === 0) {
+            throw new Error("Empty transcript");
+          }
           transcriptText = transcript.map((t) => `[${t.offset}s] ${t.text}`).join("\n");
         } catch (e) {
           console.warn("Transcript fetch failed, switching to AI fallback:", e);
@@ -41,8 +60,101 @@ export async function POST(req: Request) {
         }
     }
 
-    // 3. Prompt Gemini (Upgraded to Gemini 3.0 Logic)
-    const model = genAI.getGenerativeModel({ model: AI_CONFIG.model });
+    // 3. Define Schema (Strict JSON)
+    const responseSchema: Schema = {
+      type: SchemaType.OBJECT,
+      properties: {
+        title: { type: SchemaType.STRING },
+        lrcData: {
+          type: SchemaType.ARRAY,
+          items: {
+            type: SchemaType.OBJECT,
+            properties: {
+              timestamp: { type: SchemaType.STRING },
+              content: { type: SchemaType.STRING }
+            }
+          }
+        },
+        keywords: {
+          type: SchemaType.ARRAY,
+          minItems: 5,
+          maxItems: 10,
+          items: {
+            type: SchemaType.OBJECT,
+            properties: {
+              word: { type: SchemaType.STRING },
+              definition: { type: SchemaType.STRING },
+              funny_definition: { type: SchemaType.STRING },
+              phonetic: { type: SchemaType.STRING },
+              example: { type: SchemaType.STRING },
+              star_comment: { type: SchemaType.STRING },
+              cefr: { type: SchemaType.STRING },
+            },
+            required: ["word", "definition", "funny_definition", "phonetic", "example", "star_comment", "cefr"],
+          },
+        },
+        scenarioDialogue: {
+            type: SchemaType.OBJECT,
+            properties: {
+                character: { type: SchemaType.STRING },
+                text: { type: SchemaType.STRING },
+                translation: { type: SchemaType.STRING },
+                question: { type: SchemaType.STRING }
+            },
+            required: ["character", "text", "translation", "question"]
+        },
+        quiz: {
+            type: SchemaType.ARRAY,
+            items: {
+                type: SchemaType.OBJECT,
+                properties: {
+                    question: { type: SchemaType.STRING },
+                    options: { type: SchemaType.ARRAY, items: { type: SchemaType.STRING } },
+                    correctAnswer: { type: SchemaType.STRING }
+                },
+                required: ["question", "options", "correctAnswer"]
+            }
+        },
+        mentor: {
+            type: SchemaType.OBJECT,
+            properties: {
+                name: { type: SchemaType.STRING },
+                avatar: { type: SchemaType.STRING }
+            }
+        },
+        difficulty: { type: SchemaType.NUMBER },
+        proficiency: {
+            type: SchemaType.OBJECT,
+            properties: {
+                totalScore: { type: SchemaType.NUMBER },
+                rank: { type: SchemaType.STRING }
+            }
+        },
+        error: { type: SchemaType.STRING },
+        message: { type: SchemaType.STRING }
+      },
+      required: ["title", "keywords", "lrcData"] // Basic requirements
+    };
+
+    // 4. Prompt Gemini (Upgraded to Gemini 3.0 Logic)
+    const model = genAI.getGenerativeModel({ 
+        model: AI_CONFIG.model,
+        generationConfig: {
+            responseMimeType: "application/json",
+            responseSchema,
+            temperature: 0.7
+        }
+    });
+
+    // Repair model for JSON fixing
+    const repairModel = genAI.getGenerativeModel({
+      model: AI_CONFIG.model,
+      generationConfig: {
+        responseMimeType: "application/json",
+        responseSchema,
+        temperature: 0.2,
+      },
+    });
     
     // Determine difficulty level prompt
     const difficultyPrompt = difficulty === "auto" 
@@ -75,7 +187,7 @@ export async function POST(req: Request) {
         7. **Difficulty**: ${difficultyPrompt}
   
         **OUTPUT FORMAT (JSON ONLY)**:
-        (Same JSON structure as standard mode)
+        Strictly follow the JSON schema provided.
         `;
     } else if (!isFallbackMode) {
       // Standard flow with transcript
@@ -111,78 +223,47 @@ export async function POST(req: Request) {
         7. **Difficulty**: ${difficultyPrompt}
   
         **OUTPUT FORMAT (JSON ONLY)**:
-        {
-          "title": "Song Title",
-          "lrcData": [
-            {"timestamp": "[00:12.45]", "content": "I'm a Queencard, you wanna be the Queencard?"}
-          ],
-          "keywords": [
-            {
-              "word": "Stunner",
-              "definition": "Someone who looks absolutely amazing and shocks everyone.",
-              "phonetic": "/ˈstʌn.ər/",
-              "example": "She walked in looking like a total stunner.",
-              "cefr": "B1"
-            }
-          ],
-          "scenarioDialogue": {
-            "character": "Yuqi",
-            "text": "Hey Neverland! Did you see my outfit in the MV? It's totally giving rockstar vibes, right?",
-            "translation": "嘿 Neverland！你有看到我在 MV 裡的造型嗎？完全是搖滾巨星的氛圍對吧？",
-            "question": "What kind of vibe do you think suits me best?"
-          },
-          "quiz": [
-            {
-              "question": "What is a 'Queencard'?",
-              "options": ["A playing card", "A popular girl", "A credit card", "A map"],
-              "correctAnswer": "A popular girl"
-            }
-          ],
-          "mentor": {
-            "name": "Soyeon",
-            "avatar": "/assets/avatars/soyeon.png"
-          },
-          "difficulty": 2,
-          "proficiency": { "totalScore": 100, "rank": "Rookie" },
-          "mediaUrl": "${url}",
-          "videoId": "${videoId}"
-        }
+        Strictly follow the JSON schema provided.
       `;
     } else {
-      // Fallback flow: AI Retrieval Mode
+      // Fallback flow: AI Retrieval Mode (Enhanced)
       prompt = `
-        **ROLE**: You are "Gemini 3.0", the K-pop lyrics expert.
-        **SITUATION**: I cannot fetch the subtitles for this video, but it is likely a (G)I-DLE song or related content.
-        
-        **INPUT**:
-        - URL: ${url}
-        - Video ID: ${videoId}
+        **ROLE**: You are "Gemini 3.0", the K-pop lyrics expert with a massive 2026 knowledge base.
+        **SITUATION**: I cannot fetch the subtitles for this video (${url}), but it is likely a (G)I-DLE song or related content.
         
         **TASK**:
         1. **Identify the Song**: Based on the Video ID and your knowledge base, identify the song.
-        2. **Retrieve Lyrics**: Provide the full lyrics (English/Korean mixed as per original).
+        2. **Retrieve Lyrics**: Please use your 2026 knowledge base to reconstruct the full lyrics (English/Korean mixed as per original).
         3. **Estimate LRC**: Generate ESTIMATED timestamps. It doesn't have to be perfect, but should flow logically (Verse 1 starts ~0:15, Chorus ~0:50, etc.).
         4. **Generate Learning Content**: Create the same rich learning content (Keywords, Scenario, Quiz) as usual.
         
         **IF YOU CANNOT IDENTIFY THE SONG**:
-        Return a JSON with a field "error": "manual_input_needed" and a "message": "Oh no! I couldn't find this song in my database. Please help me by pasting the lyrics!".
-
+        Return a JSON with a field "error": "manual_input_needed" and a "message": "Oops! AI 暫時沒聽過這首歌。身為翻譯官的妳，能手動貼上歌詞嗎？貼上後我會立刻幫妳生成關卡！".
+        
         **REQUIREMENTS**:
         (Same as standard mode: Keywords, Scenario, Quiz, etc.)
         
         **OUTPUT FORMAT (JSON ONLY)**:
-        (Same structure as above. If failed, return {"error": "manual_input_needed", "message": "..."})
+        Strictly follow the JSON schema provided.
       `;
     }
 
-    const result = await model.generateContent(prompt);
-    const response = await result.response;
-    let text = response.text();
-
-    // Cleanup JSON
-    text = text.replace(/```json/g, "").replace(/```/g, "").trim();
-    
-    const data = JSON.parse(text);
+    let data;
+    try {
+        const result = await model.generateContent(prompt);
+        const response = await result.response;
+        let text = response.text();
+        // Cleanup JSON
+        text = text.replace(/```json/g, "").replace(/```/g, "").trim();
+        data = safeJsonParse(text);
+    } catch (e) {
+        console.warn("First attempt failed, trying repair:", e);
+        // Retry logic with repair model
+        const repairPrompt = `Fix the following JSON to match the schema. \n\n${prompt}`; // Simplified repair prompt
+        const repairResult = await repairModel.generateContent(repairPrompt);
+        const repairText = (await repairResult.response).text();
+        data = safeJsonParse(repairText.replace(/```json/g, "").replace(/```/g, "").trim());
+    }
 
     if (data.error === "manual_input_needed") {
       return NextResponse.json({ error: "manual_input_needed", message: data.message }, { status: 422 });

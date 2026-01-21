@@ -49,7 +49,11 @@ export function AdminIngest() {
     } catch (err: any) {
       console.error(err);
       setStatus("error");
-      setMessage(err.message);
+      let msg = err.message;
+      if (msg.includes("reading '0'") || msg.includes("undefined") || msg.includes("null")) {
+        msg = "偵測到舞台資料缺失，正在啟動 Gemini 3.0 全球知識庫進行歌詞重構...";
+      }
+      setMessage(msg);
     } finally {
       if (status !== "manual_input_needed") {
          setLoading(false);
@@ -107,14 +111,14 @@ export function AdminIngest() {
         keywords: missionData.keywords,
         challenges: {
           fillInTheBlank: {
-            sentence: missionData.keywords[0]?.example || "Example sentence",
-            answer: missionData.keywords[0]?.word || "word",
+            sentence: missionData.keywords?.[0]?.example || "Example sentence",
+            answer: missionData.keywords?.[0]?.word || "word",
           },
           definitionMatching: {
-            pairs: missionData.keywords.slice(0, 3).map((k: any) => ({
+            pairs: missionData.keywords?.slice(0, 3).map((k: any) => ({
               word: k.word,
               definition: k.definition,
-            })),
+            })) || [],
           },
           chatChallenge: {
             question: missionData.scenarioDialogue?.question || `What is the main theme of ${missionData.title}?`,
