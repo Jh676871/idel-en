@@ -5,6 +5,21 @@ import { AI_CONFIG } from "@/config/ai-config";
 
 const genAI = new GoogleGenerativeAI(AI_CONFIG.apiKey);
 
+// Helper for safe JSON parsing
+function safeJsonParse(text: string) {
+  try {
+    return JSON.parse(text);
+  } catch {
+    const start = text.indexOf("{");
+    const end = text.lastIndexOf("}");
+    if (start >= 0 && end > start) {
+      const sliced = text.slice(start, end + 1);
+      return JSON.parse(sliced);
+    }
+    throw new Error("Model did not return valid JSON");
+  }
+}
+
 // Helper for timeout
 function withTimeout<T>(promise: Promise<T>, ms: number, errorMsg: string): Promise<T> {
   return new Promise((resolve, reject) => {
