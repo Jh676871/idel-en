@@ -13,6 +13,7 @@ export function AdminIngest() {
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState<"idle" | "success" | "error" | "manual_input_needed">("idle");
   const [message, setMessage] = useState("");
+  const [loadingText, setLoadingText] = useState("正在連線至 YouTube 舞台...");
   const [manualLyrics, setManualLyrics] = useState("");
   const { addMission } = useLearning();
 
