@@ -20,6 +20,10 @@
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
+@utility pb-safe {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
 :root {
   --background: #1a0033;
   --foreground: #ffffff;
