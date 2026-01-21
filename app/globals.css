@@ -40,6 +40,228 @@ body {
   text-shadow: 2px 2px 10px rgba(0, 0, 0, 1);
 }
 
+.glitch {
+  position: relative;
+  display: inline-block;
+}
+
+.glitch::before,
+.glitch::after {
+  content: attr(data-text);
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  will-change: transform, clip-path, opacity;
+}
+
+.glitch::before {
+  text-shadow: -2px 0 rgba(255, 0, 80, 0.95);
+  opacity: 0.95;
+  animation: glitch-slice-a 900ms steps(2, end) infinite, glitch-jitter 120ms steps(2, end) infinite;
+}
+
+.glitch::after {
+  text-shadow: 2px 0 rgba(0, 229, 255, 0.95);
+  opacity: 0.85;
+  animation: glitch-slice-b 1100ms steps(2, end) infinite, glitch-jitter 100ms steps(2, end) infinite reverse;
+}
+
+.glitch-rgb {
+  position: relative;
+  display: inline-block;
+  color: #ffffff;
+}
+
+.glitch-rgb::before,
+.glitch-rgb::after {
+  content: attr(data-text);
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  will-change: transform, opacity;
+}
+
+.glitch-rgb::before {
+  transform: translateX(-2px);
+  color: rgba(255, 0, 127, 0.95);
+  opacity: 0.95;
+  animation: rgb-split 140ms steps(2, end) infinite;
+  filter: drop-shadow(0 0 12px rgba(255, 0, 127, 0.8));
+}
+
+.glitch-rgb::after {
+  transform: translateX(2px);
+  color: rgba(255, 215, 0, 0.95);
+  opacity: 0.9;
+  animation: rgb-split 120ms steps(2, end) infinite reverse;
+  filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.55));
+}
+
+@keyframes glitch-jitter {
+  0% {
+    transform: translate(0, 0);
+  }
+  25% {
+    transform: translate(-1px, 1px);
+  }
+  50% {
+    transform: translate(1px, -1px);
+  }
+  75% {
+    transform: translate(2px, 0);
+  }
+  100% {
+    transform: translate(0, 0);
+  }
+}
+
+@keyframes glitch-slice-a {
+  0% {
+    clip-path: inset(0 0 88% 0);
+  }
+  10% {
+    clip-path: inset(12% 0 68% 0);
+  }
+  20% {
+    clip-path: inset(46% 0 40% 0);
+  }
+  30% {
+    clip-path: inset(76% 0 10% 0);
+  }
+  40% {
+    clip-path: inset(8% 0 74% 0);
+  }
+  50% {
+    clip-path: inset(58% 0 20% 0);
+  }
+  60% {
+    clip-path: inset(24% 0 56% 0);
+  }
+  70% {
+    clip-path: inset(64% 0 26% 0);
+  }
+  80% {
+    clip-path: inset(36% 0 46% 0);
+  }
+  90% {
+    clip-path: inset(84% 0 6% 0);
+  }
+  100% {
+    clip-path: inset(0 0 88% 0);
+  }
+}
+
+@keyframes glitch-slice-b {
+  0% {
+    clip-path: inset(82% 0 8% 0);
+  }
+  10% {
+    clip-path: inset(54% 0 30% 0);
+  }
+  20% {
+    clip-path: inset(18% 0 62% 0);
+  }
+  30% {
+    clip-path: inset(72% 0 16% 0);
+  }
+  40% {
+    clip-path: inset(34% 0 48% 0);
+  }
+  50% {
+    clip-path: inset(6% 0 80% 0);
+  }
+  60% {
+    clip-path: inset(44% 0 38% 0);
+  }
+  70% {
+    clip-path: inset(26% 0 58% 0);
+  }
+  80% {
+    clip-path: inset(60% 0 22% 0);
+  }
+  90% {
+    clip-path: inset(14% 0 66% 0);
+  }
+  100% {
+    clip-path: inset(82% 0 8% 0);
+  }
+}
+
+@keyframes rgb-split {
+  0% {
+    transform: translateX(-2px);
+  }
+  50% {
+    transform: translateX(2px);
+  }
+  100% {
+    transform: translateX(-2px);
+  }
+}
+
+.flicker-fast {
+  animation: flicker 160ms steps(2, end) infinite;
+  will-change: opacity, filter;
+}
+
+@keyframes flicker {
+  0% {
+    opacity: 1;
+    filter: drop-shadow(0 0 10px rgba(255, 0, 127, 0.65));
+  }
+  14% {
+    opacity: 0.55;
+    filter: drop-shadow(0 0 4px rgba(255, 0, 127, 0.35));
+  }
+  28% {
+    opacity: 1;
+    filter: drop-shadow(0 0 12px rgba(255, 215, 0, 0.55));
+  }
+  43% {
+    opacity: 0.7;
+    filter: drop-shadow(0 0 6px rgba(0, 229, 255, 0.45));
+  }
+  60% {
+    opacity: 1;
+    filter: drop-shadow(0 0 14px rgba(255, 0, 127, 0.75));
+  }
+  76% {
+    opacity: 0.5;
+    filter: drop-shadow(0 0 3px rgba(255, 0, 80, 0.35));
+  }
+  100% {
+    opacity: 1;
+    filter: drop-shadow(0 0 10px rgba(255, 0, 127, 0.65));
+  }
+}
+
+.glitch-hover {
+  position: relative;
+  display: inline-block;
+}
+
+.glitch-hover::before,
+.glitch-hover::after {
+  content: attr(data-text);
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  will-change: transform, opacity;
+}
+
+.glitch-hover:hover::before {
+  opacity: 0.9;
+  text-shadow: -2px 0 rgba(255, 0, 80, 0.85);
+  animation: glitch-jitter 110ms steps(2, end) infinite;
+}
+
+.glitch-hover:hover::after {
+  opacity: 0.75;
+  text-shadow: 2px 0 rgba(0, 229, 255, 0.85);
+  animation: glitch-jitter 95ms steps(2, end) infinite reverse;
+}
+
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-orbitron), var(--font-noto-sans-tc), var(--font-geist-sans), Arial, Helvetica, sans-serif;
 }

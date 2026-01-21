@@ -7,14 +7,23 @@ interface GlitchTextProps {
 }
 
 export function GlitchText({ text }: GlitchTextProps) {
+  const parts = text.split("I-DLE");
+
   return (
     <motion.h1
-      className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-bold text-white font-orbitron tracking-wider text-shadow-strong"
+      className="glitch text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-orbitron font-black tracking-[-0.08em] text-white"
+      data-text={text}
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.8 }}
     >
-      {text}
+      {parts[0]}
+      {parts.length > 1 && (
+        <span className="glitch-rgb" data-text="I-DLE">
+          I-DLE
+        </span>
+      )}
+      {parts.slice(1).join("I-DLE")}
     </motion.h1>
   );
 }
