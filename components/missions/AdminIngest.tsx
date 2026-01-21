@@ -11,8 +11,8 @@ export function AdminIngest() {
   const [url, setUrl] = useState("");
   const [difficulty, setDifficulty] = useState<"auto" | 1 | 2 | 3>("auto");
   const [loading, setLoading] = useState(false);
-  const [status, setStatus] = useState<"idle" | "success" | "error">("idle");
-  const [message, setMessage] = useState("");
+  const [status, setStatus] = useState<"idle" | "success" | "error" | "manual_input_needed">("idle");
+  const [manualLyrics, setManualLyrics] = useState("");
   const { addMission } = useLearning();
 
   const handleIngest = async () => {
@@ -32,11 +32,64 @@ export function AdminIngest() {
       const data = await res.json();
 
       if (!res.ok) {
+        if (data.error === "manual_input_needed") {
+          setStatus("manual_input_needed");
+          setMessage("舞台資料讀取中遇到了一點亂流... 正在切換至 AI 智慧檢索模式！如果連 AI 也找不到，請幫忙手動貼上歌詞吧！");
+          setLoading(false);
+          return;
+        }
         throw new Error(data.error || "Failed to ingest");
       }
 
       // Transform into ProcessedMission
       const missionData = data.data;
+      // ... (Rest of processing)
+      await processMissionData(missionData);
+    } catch (err: any) {
+      console.error(err);
+      setStatus("error");
+      setMessage(err.message);
+    } finally {
+      if (status !== "manual_input_needed") {
+         setLoading(false);
+      }
+    }
+  };
+
+  const handleManualSubmit = async () => {
+    if (!manualLyrics.trim()) return;
+    setLoading(true);
+    
+    // Call a new endpoint or the same one with manual lyrics override?
+    // Actually, we can reuse process-content logic but tailored for manual text
+    // Or we can assume we need to process this raw text into the structured format.
+    // Let's reuse ingest-youtube but maybe we need a new param or endpoint?
+    // Wait, the user instruction said: "貼上後處理： 當使用者手動貼上歌詞後，再次調用 Gemini 3.0 進行單字拆解與任務生成。"
+    // This sounds like we should send the manual lyrics to be processed.
+    
+    // Let's create a specialized handler or modify ingest-youtube to accept 'manualContent'
+    // For simplicity, let's call the same endpoint but with manualContent.
+    
+    try {
+        const res = await fetch("/api/ingest-youtube", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ url, difficulty, manualContent: manualLyrics }),
+        });
+        
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || "Failed to process manual content");
+        
+        await processMissionData(data.data);
+    } catch (err: any) {
+        setStatus("error");
+        setMessage(err.message);
+    } finally {
+        setLoading(false);
+    }
+  };
+
+  const processMissionData = async (missionData: any) => {
       const newMission: ProcessedMission = {
         id: `mission-${Date.now()}`,
         createdAt: Date.now(),
@@ -78,13 +131,8 @@ export function AdminIngest() {
       setStatus("success");
       setMessage(`Successfully added "${missionData.title}"!`);
       setUrl("");
-    } catch (err: any) {
-      console.error(err);
-      setStatus("error");
-      setMessage(err.message);
-    } finally {
-      setLoading(false);
-    }
+      setManualLyrics("");
+      setDifficulty("auto");
   };
 
   return (
@@ -174,6 +222,37 @@ export function AdminIngest() {
                 <XCircle size={16} />
                 <span className="text-sm">{message}</span>
               </div>
+            )}
+
+            {status === "manual_input_needed" && (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="mt-4 p-4 border border-idle-pink/30 rounded-lg bg-idle-pink/5"
+              >
+                <div className="flex items-start gap-3 mb-3 text-idle-pink">
+                  <span className="text-xl">⚠️</span>
+                  <div>
+                    <p className="font-bold text-sm mb-1">Oh no! 我找不到這首歌的歌詞...</p>
+                    <p className="text-xs opacity-80">翻譯官，可以麻煩妳幫我把歌詞貼在這裡嗎？我會再試著用 Gemini 3.0 分析它！</p>
+                  </div>
+                </div>
+                
+                <textarea
+                  value={manualLyrics}
+                  onChange={(e) => setManualLyrics(e.target.value)}
+                  placeholder="Paste English/Korean lyrics here..."
+                  className="w-full h-32 bg-black/50 border border-white/20 rounded-lg p-3 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-idle-pink transition-colors mb-3"
+                />
+                
+                <button
+                  onClick={handleManualSubmit}
+                  disabled={loading || !manualLyrics.trim()}
+                  className="w-full bg-idle-pink hover:bg-idle-pink/80 text-white font-bold py-2 rounded-lg transition-all disabled:opacity-50 text-sm flex items-center justify-center gap-2"
+                >
+                  {loading ? <Loader2 size={14} className="animate-spin" /> : "Submit Manual Lyrics"}
+                </button>
+              </motion.div>
             )}
           </motion.div>
         )}
