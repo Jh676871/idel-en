@@ -28,8 +28,15 @@ export function MusicVideoSection() {
           <p className="text-gray-300">先看 I-DLE 的專屬開場影片，暖身一下</p>
         </div>
 
-        {/* Placeholder grid pattern overlay */}
-        <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10 pointer-events-none" />
+        <div
+          className="absolute inset-0 opacity-10 pointer-events-none"
+          style={{
+            backgroundImage:
+              "linear-gradient(rgba(255,255,255,0.14) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.14) 1px, transparent 1px)",
+            backgroundSize: "56px 56px",
+            backgroundPosition: "center",
+          }}
+        />
       </motion.div>
     </section>
   );

@@ -32,7 +32,7 @@ export default function Home() {
 
       <Navbar />
       
-      <div className="pt-16 relative z-10">
+      <div className="pt-14 md:pt-16 relative z-10">
         <Hero />
         
         <MemberSection 

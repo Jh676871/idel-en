@@ -53,9 +53,9 @@ export default function RootLayout({
       >
         <div className="fixed inset-0 -z-10">
           <picture>
-            <source media="(min-width: 768px)" srcSet="/assets/images/bg_desktop.webp" />
+            <source media="(min-width: 768px)" srcSet="/assets/images/backgrounds/bg_desktop.webp" />
             <img
-              src="/assets/images/bg_mobile.webp"
+              src="/assets/images/backgrounds/bg_mobile.webp"
               alt=""
               className="absolute inset-0 h-full w-full object-cover"
               style={{ filter: "brightness(0.4)" }}

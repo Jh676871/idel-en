@@ -18,11 +18,11 @@ export function Navbar() {
   return (
     <nav className="fixed top-0 w-full z-50 bg-idle-purple/80 backdrop-blur-md border-b border-white/10">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
+        <div className="flex items-center justify-between h-14 md:h-16">
           <div className="flex items-center">
             <Link href="/" className="flex items-center space-x-2 group">
               <span
-                className="glitch-hover text-2xl font-bold bg-gradient-to-r from-idle-pink to-idle-gold bg-clip-text text-transparent group-hover:scale-105 transition-transform duration-300 font-orbitron"
+                className="glitch-hover text-lg sm:text-xl md:text-2xl font-bold bg-gradient-to-r from-idle-pink to-idle-gold bg-clip-text text-transparent group-hover:scale-105 transition-transform duration-300 font-orbitron"
                 data-text="NEVERLAND 翻譯學院"
               >
                 NEVERLAND 翻譯學院

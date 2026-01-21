@@ -11,12 +11,12 @@ interface MemberSectionProps {
 
 export function MemberSection({ selectedMember, onSelectMember }: MemberSectionProps) {
   return (
-    <section id="members" className="py-20 pb-28 md:pb-20 px-4 max-w-7xl mx-auto">
+    <section id="members" className="pt-10 pb-24 md:pt-20 md:pb-20 px-4 max-w-7xl mx-auto">
       <motion.div
         initial={{ opacity: 0 }}
         whileInView={{ opacity: 1 }}
         viewport={{ once: true }}
-        className="text-center mb-12"
+        className="text-center mb-8 md:mb-12"
       >
         <h2 className="text-3xl md:text-5xl font-bold font-orbitron mb-4 text-white tracking-wider drop-shadow-[0_2px_10px_rgba(255,0,127,0.22)]">
           選擇妳的專屬拍檔 <span className="text-idle-gold flicker-fast">🎤</span>

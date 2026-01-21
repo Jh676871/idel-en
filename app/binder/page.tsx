@@ -39,9 +39,13 @@ export default function BinderPage() {
     <main className="min-h-screen text-white relative overflow-hidden">
       <Navbar />
       
-      {/* Background Texture - Leather Binder Look */}
-      <div className="fixed inset-0 z-0 opacity-20 pointer-events-none" 
-           style={{ backgroundImage: "url('/assets/images/leather-texture.png')", backgroundSize: '200px' }} />
+      <div
+        className="fixed inset-0 z-0 opacity-25 pointer-events-none"
+        style={{
+          backgroundImage:
+            "radial-gradient(circle at 20% 15%, rgba(255, 0, 127, 0.10), transparent 55%), radial-gradient(circle at 80% 75%, rgba(255, 215, 0, 0.08), transparent 60%), repeating-linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0, rgba(255, 255, 255, 0.05) 2px, transparent 2px, transparent 10px)",
+        }}
+      />
 
       <div className="relative z-10 pt-24 pb-12 px-4 max-w-7xl mx-auto">
         {/* Header */}

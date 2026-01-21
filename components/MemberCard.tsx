@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { User } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Member } from "@/lib/constants";
+import { useState } from "react";
 
 interface MemberCardProps {
   member: Member;
@@ -13,6 +14,10 @@ interface MemberCardProps {
 }
 
 export function MemberCard({ member, isSelected, onSelect, index }: MemberCardProps) {
+  const avatarSrc = `/assets/images/members/member_${member.id}.webp`;
+  const [avatarErrorSrc, setAvatarErrorSrc] = useState<string | null>(null);
+  const avatarError = avatarErrorSrc === avatarSrc;
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 50 }}
@@ -57,8 +62,16 @@ export function MemberCard({ member, isSelected, onSelect, index }: MemberCardPr
           )}>
             <div className="relative w-full h-full flex items-center justify-center">
               <div className="absolute inset-0 bg-white/10 animate-pulse" />
-              <User className="w-10 h-10 text-white/45" />
-              {/* <!-- Replace with actual member photo here --> */}
+              {!avatarError && (
+                <img
+                  src={avatarSrc}
+                  alt={member.displayName}
+                  className="absolute inset-0 w-full h-full object-cover"
+                  loading="lazy"
+                  onError={() => setAvatarErrorSrc(avatarSrc)}
+                />
+              )}
+              {avatarError && <User className="w-10 h-10 text-white/45" />}
             </div>
           </div>
         </div>

@@ -7,7 +7,7 @@ export default function LyricsPage() {
   return (
     <main className="min-h-screen text-white">
       <Navbar />
-      <div className="pt-16">
+      <div className="pt-14 md:pt-16">
         <LyricDecoder />
       </div>
     </main>

@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { Photocard, getRarityColor } from "@/lib/cards";
 import { Lock } from "lucide-react";
@@ -13,6 +14,9 @@ interface PhotocardProps {
 export function PhotocardView({ card, isUnlocked, isFlipped = false, onFlip, size = "md" }: PhotocardProps) {
   const width = size === "sm" ? 120 : size === "md" ? 200 : 300;
   const height = width * 1.5;
+
+  const [imageErrorCardId, setImageErrorCardId] = useState<string | null>(null);
+  const imageError = imageErrorCardId === card.id;
 
   const getRarityLabel = (rarity: Photocard["rarity"]) => {
     if (rarity === "Super Rare") return "超稀有";
@@ -38,7 +42,14 @@ export function PhotocardView({ card, isUnlocked, isFlipped = false, onFlip, siz
         >
           {isUnlocked ? (
             // Unlocked but face down (Back Design)
-            <div className="w-full h-full flex flex-col items-center justify-center bg-[url('/assets/images/card-back-pattern.png')] bg-cover">
+            <div className="relative w-full h-full flex flex-col items-center justify-center">
+              <div
+                className="absolute inset-0"
+                style={{
+                  backgroundImage:
+                    "radial-gradient(circle at 30% 30%, rgba(255, 0, 127, 0.18), transparent 55%), radial-gradient(circle at 70% 60%, rgba(255, 215, 0, 0.14), transparent 60%), repeating-linear-gradient(135deg, rgba(255, 255, 255, 0.06) 0, rgba(255, 255, 255, 0.06) 2px, transparent 2px, transparent 10px)",
+                }}
+              />
                <div className="w-16 h-16 rounded-full border-2 border-idle-gold/50 flex items-center justify-center">
                  <span className="font-orbitron font-bold text-idle-gold text-xl">NVRLND</span>
                </div>
@@ -64,8 +75,18 @@ export function PhotocardView({ card, isUnlocked, isFlipped = false, onFlip, siz
             <>
               {/* Card Image */}
               <div className="relative w-full h-full bg-gray-800">
-                {/* Fallback to color if image fails (since we don't have real images yet) */}
-                <div className={`w-full h-full bg-gradient-to-b ${getRarityColor(card.rarity)} opacity-80`} />
+                {!imageError && (
+                  <img
+                    src={card.image}
+                    alt={card.name}
+                    className="absolute inset-0 w-full h-full object-cover"
+                    loading="lazy"
+                    onError={() => setImageErrorCardId(card.id)}
+                  />
+                )}
+                {imageError && (
+                  <div className={`w-full h-full bg-gradient-to-b ${getRarityColor(card.rarity)} opacity-80`} />
+                )}
                 
                 {/* Overlay Details */}
                 <div className="absolute bottom-0 left-0 w-full p-4 bg-gradient-to-t from-black/90 to-transparent">
