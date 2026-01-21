@@ -17,7 +17,7 @@ export function StartSection() {
         <div className="relative bg-black rounded-full px-8 py-4 border border-white/20 flex items-center space-x-3 group-hover:bg-black/80 transition-colors">
           <Sparkles className="w-6 h-6 text-idle-gold animate-spin-slow" />
           <span className="text-xl font-bold font-orbitron text-white tracking-wider uppercase">
-            Start Mission
+            開始巡迴挑戰
           </span>
           <Sparkles className="w-6 h-6 text-idle-gold animate-spin-slow" />
         </div>

@@ -6,10 +6,10 @@ import { Home, Target, BookOpen, Grid } from "lucide-react";
 import { motion } from "framer-motion";
 
 const navItems = [
-  { name: "Home", href: "/", icon: Home },
-  { name: "Missions", href: "/missions", icon: Target },
-  { name: "Word Bank", href: "/collection", icon: BookOpen },
-  { name: "Binder", href: "/binder", icon: Grid },
+  { name: "我的舞台", href: "/", icon: Home },
+  { name: "巡迴挑戰", href: "/missions", icon: Target },
+  { name: "靈魂單字本", href: "/collection", icon: BookOpen },
+  { name: "寶藏盒", href: "/binder", icon: Grid },
 ];
 
 export function BottomNav() {
@@ -38,7 +38,7 @@ export function BottomNav() {
                   />
                 )}
               </div>
-              <span className="text-[10px] font-medium">{item.name}</span>
+              <span className="text-[10px] font-medium whitespace-nowrap">{item.name}</span>
             </Link>
           );
         })}

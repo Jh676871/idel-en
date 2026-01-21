@@ -54,7 +54,7 @@ export function MemberCard({ member, isSelected, onSelect, index }: MemberCardPr
         </div>
         
         <h3 className="text-xl font-bold font-orbitron text-white mb-1">{member.name}</h3>
-        <p className="text-sm text-gray-400 uppercase tracking-widest">{member.role}</p>
+        <p className="text-sm text-gray-400 tracking-widest whitespace-nowrap">{member.role}</p>
         
         <div className={cn(
             "mt-4 transition-all duration-300",
@@ -64,7 +64,7 @@ export function MemberCard({ member, isSelected, onSelect, index }: MemberCardPr
                "text-xs font-bold px-3 py-1 rounded-full transition-colors",
                isSelected ? "bg-white text-black" : "text-white bg-white/20"
            )}>
-             {isSelected ? "Selected" : "Select"}
+             {isSelected ? "已選擇" : "選擇"}
            </span>
         </div>
       </div>

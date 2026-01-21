@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono, Orbitron } from "next/font/google";
+import { Geist, Geist_Mono, Noto_Sans_TC, Orbitron } from "next/font/google";
 import { LearningProvider } from "@/context/LearningContext";
 import { Passport } from "@/components/Passport";
 import { BottomNav } from "@/components/BottomNav";
@@ -21,9 +21,16 @@ const orbitron = Orbitron({
   weight: ["400", "700", "900"],
 });
 
+const notoSansTc = Noto_Sans_TC({
+  variable: "--font-noto-sans-tc",
+  subsets: ["latin"],
+  weight: ["400", "700"],
+  display: "swap",
+});
+
 export const metadata: Metadata = {
-  title: "NEVERLAND Academy",
-  description: "Learn English with I-DLE",
+  title: "NEVERLAND 翻譯學院",
+  description: "和 I-DLE 一起練英文（翻譯官模式）",
   manifest: "/manifest.json",
 };
 
@@ -40,9 +47,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark">
+    <html lang="zh-Hant" className="dark">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${orbitron.variable} antialiased bg-idle-purple text-white pb-16 md:pb-0`}
+        className={`${geistSans.variable} ${geistMono.variable} ${orbitron.variable} ${notoSansTc.variable} antialiased bg-idle-purple text-white pb-16 md:pb-0`}
       >
         <LearningProvider>
           <Passport />

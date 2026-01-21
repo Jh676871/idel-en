@@ -65,29 +65,29 @@ function pickReview(member: string, score: number, total: number) {
 
   const byMember: Record<string, string[]> = {
     Soyeon: [
-      "Your rhythm in English is getting better! Keep that confidence.",
-      "Nice control. Now try to be even more precise with your word choices.",
-      "You’re improving fast. Next time, challenge yourself with longer sentences.",
+      "翻譯官小助手，妳的英文節奏越來越穩了，保持那股自信。",
+      "控制得很漂亮。下一輪我們把用字再精準一點，妳會更帥。",
+      "進步超快的。下次挑戰更長的句子，我們一起把舞台撐起來。",
     ],
     Miyeon: [
-      "That was so lovely! Your pronunciation is becoming clearer.",
-      "Good job! Let’s make your sentences smoother and more natural next time.",
-      "You did great—keep practicing and you’ll shine even brighter.",
+      "翻譯官小助手，剛剛好溫柔～發音越來越清楚了。",
+      "做得很好！下次我們把句子接得更順、更像母語一樣自然。",
+      "妳很棒耶～繼續練，妳會在舞台上更閃耀。",
     ],
     Minnie: [
-      "I love your vibe. Use those new words more boldly in chat.",
-      "So good! Try adding feelings and details to your English.",
-      "You’re getting more fluent—keep the energy going.",
+      "翻譯官小助手，我喜歡妳的 vibe。聊天室裡把新單字用大膽一點。",
+      "很可以！英文再多放一點情緒和細節，聽起來會更迷人。",
+      "越來越流暢了～把這個能量繼續維持住。",
     ],
     Yuqi: [
-      "Wow! You’re getting stronger in English, like touring-ready!",
-      "Nice! Try using two target words in one sentence next time.",
-      "Great job—your English is leveling up!",
+      "翻譯官小助手，哇！妳的英文越來越強，世巡 ready 了啦！",
+      "很棒！下次一個句子裡塞兩個目標單字，挑戰一下。",
+      "做得漂亮～妳的英文正在升級！",
     ],
     Shuhua: [
-      "Good. Now be brave and speak more.",
-      "Not bad. Try again with more confidence.",
-      "You’re improving. Keep going.",
+      "翻譯官小助手，不錯。再勇敢一點，多說幾句。",
+      "還可以。再來一次，記得把自信放大。",
+      "有進步。繼續往前走，我在。",
     ],
   };
 
@@ -224,17 +224,17 @@ export function MissionPlayer({ mission }: { mission: ProcessedMission }) {
       <div className="flex items-center justify-between gap-4 mb-6">
         <div>
           <h1 className="text-2xl md:text-3xl font-orbitron font-bold">{mission.title}</h1>
-          <p className="text-gray-400 text-sm">{mission.proficiency} • {mission.source.type} • {mission.keywords.length} keywords</p>
+          <p className="text-gray-400 text-sm">{mission.proficiency} • {mission.source.type} • {mission.keywords.length} 個關鍵字</p>
         </div>
         <div className="flex items-center gap-2">
           <span className={stage === "spotlight" ? "px-3 py-1 rounded-full bg-idle-pink text-white text-xs font-bold" : "px-3 py-1 rounded-full bg-white/10 text-gray-200 text-xs"}>
-            1 Spotlight
+            1 聚光燈
           </span>
           <span className={stage === "practice" ? "px-3 py-1 rounded-full bg-idle-pink text-white text-xs font-bold" : "px-3 py-1 rounded-full bg-white/10 text-gray-200 text-xs"}>
-            2 Practice
+            2 特訓
           </span>
           <span className={stage === "real_chat" ? "px-3 py-1 rounded-full bg-idle-pink text-white text-xs font-bold" : "px-3 py-1 rounded-full bg-white/10 text-gray-200 text-xs"}>
-            3 Real Chat
+            3 真實陪練
           </span>
         </div>
       </div>
@@ -249,9 +249,9 @@ export function MissionPlayer({ mission }: { mission: ProcessedMission }) {
             className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 px-4 py-3 rounded-2xl bg-black/70 border border-white/10 backdrop-blur-md"
           >
             <div className="text-sm text-white font-bold">
-              {toast.word.toUpperCase()} Level Up: {toast.from} → {toast.to}
+              {toast.word.toUpperCase()} 熟練度升級：{toast.from} → {toast.to}
             </div>
-            {toast.to === 5 && <div className="text-xs text-idle-gold font-bold mt-1">Golden Card Unlocked</div>}
+            {toast.to === 5 && <div className="text-xs text-idle-gold font-bold mt-1">金卡已解鎖</div>}
           </motion.div>
         )}
       </AnimatePresence>
@@ -261,8 +261,8 @@ export function MissionPlayer({ mission }: { mission: ProcessedMission }) {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <div className="bg-white/5 rounded-2xl border border-white/10 overflow-hidden">
               <div className="p-5 border-b border-white/10">
-                <h2 className="font-orbitron font-bold">Spotlight</h2>
-                <p className="text-gray-400 text-sm">Media + keyword highlights</p>
+                <h2 className="font-orbitron font-bold">聚光燈</h2>
+                <p className="text-gray-400 text-sm">媒體＋關鍵字高亮</p>
               </div>
               <div className="p-5">
                 {embedUrl ? (
@@ -285,7 +285,7 @@ export function MissionPlayer({ mission }: { mission: ProcessedMission }) {
                     {mission.source.mediaUrl}
                   </a>
                 ) : (
-                  <div className="text-gray-400 text-sm">No media attached for this mission.</div>
+                  <div className="text-gray-400 text-sm">這首曲目沒有附上媒體連結。</div>
                 )}
 
                 <div className="mt-5 bg-black/30 rounded-xl border border-white/10 p-4 text-sm text-gray-200 whitespace-pre-wrap leading-relaxed">
@@ -297,14 +297,14 @@ export function MissionPlayer({ mission }: { mission: ProcessedMission }) {
             <div className="bg-white/5 rounded-2xl border border-white/10">
               <div className="p-5 border-b border-white/10 flex items-center justify-between">
                 <div>
-                  <h2 className="font-orbitron font-bold">Vocabulary</h2>
-                  <p className="text-gray-400 text-sm">Your target words for this mission</p>
+                  <h2 className="font-orbitron font-bold">目標單字</h2>
+                  <p className="text-gray-400 text-sm">這次特訓的重點詞彙</p>
                 </div>
                 <button
                   onClick={handleStartPractice}
                   className="px-4 py-2 rounded-xl bg-idle-pink text-white font-bold"
                 >
-                  Start Practice
+                  開始特訓
                 </button>
               </div>
 
@@ -326,7 +326,7 @@ export function MissionPlayer({ mission }: { mission: ProcessedMission }) {
                           <div className="flex items-center gap-2">
                             <span className="text-lg font-orbitron font-bold">{k.word}</span>
                             <span className="text-xs px-2 py-1 rounded-full bg-white/10 border border-white/10 text-gray-200">{k.cefr}</span>
-                            {isGolden && <span className="text-xs px-2 py-1 rounded-full bg-idle-gold text-black font-bold">GOLDEN</span>}
+                            {isGolden && <span className="text-xs px-2 py-1 rounded-full bg-idle-gold text-black font-bold">金卡</span>}
                           </div>
                           <div className="text-sm text-gray-300 mt-1">{k.definition}</div>
                           <div className="text-xs text-idle-gold font-mono mt-1">{k.phonetic}</div>
@@ -345,13 +345,13 @@ export function MissionPlayer({ mission }: { mission: ProcessedMission }) {
                           }}
                           className="px-3 py-2 rounded-xl bg-white/10 hover:bg-white/15 border border-white/10 text-sm font-bold"
                         >
-                          Practice +1
+                          加練 +1
                         </button>
                       </div>
 
                       <div className="mt-3">
                         <div className="flex items-center justify-between text-xs text-gray-400">
-                          <span className="font-mono">Mastery</span>
+                          <span className="font-mono">熟練度</span>
                           <span className={isGolden ? "text-idle-gold font-bold" : "text-gray-200"}>{mastery}/5</span>
                         </div>
                         <div className="h-2 bg-white/10 rounded-full overflow-hidden mt-1">
@@ -374,21 +374,21 @@ export function MissionPlayer({ mission }: { mission: ProcessedMission }) {
         <div className="bg-white/5 rounded-2xl border border-white/10 overflow-hidden">
           <div className="p-5 border-b border-white/10 flex items-center justify-between">
             <div>
-              <h2 className="font-orbitron font-bold">Practice</h2>
-              <p className="text-gray-400 text-sm">Interactive challenges</p>
+              <h2 className="font-orbitron font-bold">特訓</h2>
+              <p className="text-gray-400 text-sm">互動挑戰</p>
             </div>
             <div className="flex items-center gap-2">
               <button
                 onClick={() => setStage("spotlight")}
                 className="px-3 py-2 rounded-xl bg-white/10 hover:bg-white/15 border border-white/10 text-sm"
               >
-                Back
+                返回
               </button>
               <button
                 onClick={handleGoChat}
                 className="px-4 py-2 rounded-xl bg-idle-pink text-white font-bold"
               >
-                Go Real Chat
+                去真實陪練
               </button>
             </div>
           </div>
@@ -399,26 +399,26 @@ export function MissionPlayer({ mission }: { mission: ProcessedMission }) {
                 onClick={() => setPracticeStep(0)}
                 className={practiceStep === 0 ? "px-3 py-2 rounded-xl bg-idle-gold text-black font-bold" : "px-3 py-2 rounded-xl bg-white/10 border border-white/10"}
               >
-                Fill in blank
+                填空
               </button>
               <button
                 onClick={() => setPracticeStep(1)}
                 className={practiceStep === 1 ? "px-3 py-2 rounded-xl bg-idle-gold text-black font-bold" : "px-3 py-2 rounded-xl bg-white/10 border border-white/10"}
               >
-                Matching
+                配對
               </button>
               <button
                 onClick={() => setPracticeStep(2)}
                 className={practiceStep === 2 ? "px-3 py-2 rounded-xl bg-idle-gold text-black font-bold" : "px-3 py-2 rounded-xl bg-white/10 border border-white/10"}
               >
-                Chat Challenge
+                對話挑戰
               </button>
             </div>
 
             {practiceStep === 0 && (
               <div className="space-y-4">
                 <div className="bg-black/30 border border-white/10 rounded-xl p-4">
-                  <div className="text-sm text-gray-300 mb-2">Sentence</div>
+                  <div className="text-sm text-gray-300 mb-2">句子</div>
                   <div className="text-lg text-white">{mission.challenges.fillInTheBlank.sentence}</div>
                 </div>
                 <div className="flex flex-col md:flex-row gap-3">
@@ -426,7 +426,7 @@ export function MissionPlayer({ mission }: { mission: ProcessedMission }) {
                     value={fibInput}
                     onChange={(e) => setFibInput(e.target.value)}
                     disabled={fibDone}
-                    placeholder="Type the missing word"
+                    placeholder="輸入缺少的單字"
                     className="flex-1 px-4 py-3 rounded-xl bg-black/30 border border-white/10 focus:outline-none focus:ring-2 focus:ring-idle-pink"
                   />
                   <button
@@ -434,12 +434,12 @@ export function MissionPlayer({ mission }: { mission: ProcessedMission }) {
                     disabled={!fibInput.trim() || fibDone}
                     className="px-5 py-3 rounded-xl bg-idle-pink text-white font-bold disabled:opacity-50"
                   >
-                    Check
+                    檢查
                   </button>
                 </div>
                 {fibDone && (
                   <div className={fibCorrect ? "text-idle-gold font-bold" : "text-red-300 font-bold"}>
-                    {fibCorrect ? "Correct!" : `Answer: ${mission.challenges.fillInTheBlank.answer}`}
+                    {fibCorrect ? "答對了！" : `答案：${mission.challenges.fillInTheBlank.answer}`}
                   </div>
                 )}
               </div>
@@ -447,7 +447,7 @@ export function MissionPlayer({ mission }: { mission: ProcessedMission }) {
 
             {practiceStep === 1 && (
               <div className="space-y-4">
-                <div className="text-sm text-gray-300">Match each word with the correct definition</div>
+                <div className="text-sm text-gray-300">把每個單字配對到正確的解釋</div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {matchingPairs.map((p) => (
                     <div key={p.word} className="bg-black/30 border border-white/10 rounded-xl p-4">
@@ -458,7 +458,7 @@ export function MissionPlayer({ mission }: { mission: ProcessedMission }) {
                         disabled={matchingDone}
                         className="w-full px-4 py-3 rounded-xl bg-black/30 border border-white/10 focus:outline-none"
                       >
-                        <option value="">Select a definition</option>
+                        <option value="">選擇解釋</option>
                         {matchingDefinitions.map((d) => (
                           <option key={`${p.word}-${d}`} value={d}>
                             {d}
@@ -474,11 +474,11 @@ export function MissionPlayer({ mission }: { mission: ProcessedMission }) {
                     disabled={matchingDone}
                     className="px-5 py-3 rounded-xl bg-idle-pink text-white font-bold disabled:opacity-50"
                   >
-                    Submit
+                    送出
                   </button>
                   {matchingDone && (
                     <div className="text-idle-gold font-bold">
-                      Score: {matchingScore}/{matchingPairs.length}
+                      得分：{matchingScore}/{matchingPairs.length}
                     </div>
                   )}
                 </div>
@@ -488,17 +488,17 @@ export function MissionPlayer({ mission }: { mission: ProcessedMission }) {
             {practiceStep === 2 && (
               <div className="space-y-4">
                 <div className="bg-black/30 border border-white/10 rounded-xl p-5">
-                  <div className="text-sm text-gray-300 mb-2">Your mission chat challenge</div>
+                  <div className="text-sm text-gray-300 mb-2">這次的對話挑戰</div>
                   <div className="text-lg text-white font-bold">{mission.challenges.chatChallenge.question}</div>
                   <div className="text-gray-400 text-sm mt-2">
-                    Use at least two target words in your reply.
+                    回覆時至少用到兩個目標單字。
                   </div>
                 </div>
                 <button
                   onClick={handleGoChat}
                   className="px-5 py-3 rounded-xl bg-idle-gold text-black font-bold"
                 >
-                  Start Real Chat
+                  開始真實陪練
                 </button>
               </div>
             )}
@@ -510,21 +510,21 @@ export function MissionPlayer({ mission }: { mission: ProcessedMission }) {
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="font-orbitron font-bold text-xl">Real Chat</h2>
-              <p className="text-gray-400 text-sm">Try using your mission words naturally</p>
+              <h2 className="font-orbitron font-bold text-xl">真實陪練</h2>
+              <p className="text-gray-400 text-sm">把目標單字自然用進句子裡</p>
             </div>
             <div className="flex items-center gap-2">
               <button
                 onClick={() => setStage("practice")}
                 className="px-3 py-2 rounded-xl bg-white/10 hover:bg-white/15 border border-white/10 text-sm"
               >
-                Back
+                返回
               </button>
               <button
                 onClick={handleFinishMission}
                 className="px-4 py-2 rounded-xl bg-idle-pink text-white font-bold"
               >
-                Finish Mission
+                完成曲目
               </button>
             </div>
           </div>
@@ -552,13 +552,13 @@ export function MissionPlayer({ mission }: { mission: ProcessedMission }) {
             >
               <div className="h-2 bg-gradient-to-r from-idle-pink via-idle-gold to-idle-pink" />
               <div className="p-6">
-                <div className="text-sm text-gray-300">Performance Review</div>
+                <div className="text-sm text-gray-300">演出回饋</div>
                 <div className="text-2xl font-orbitron font-bold text-white mt-1">{reviewMember}</div>
                 <div className="mt-4 bg-black/30 border border-white/10 rounded-xl p-4 text-white">
                   {reviewText}
                 </div>
                 <div className="mt-5 flex items-center justify-between text-sm text-gray-300">
-                  <span>Practice score</span>
+                  <span>特訓分數</span>
                   <span className="text-idle-gold font-bold">{practicePoints}/{totalPracticePoints}</span>
                 </div>
                 <div className="mt-6 flex justify-end gap-3">
@@ -566,7 +566,7 @@ export function MissionPlayer({ mission }: { mission: ProcessedMission }) {
                     onClick={() => setStage("spotlight")}
                     className="px-4 py-2 rounded-xl bg-white/10 hover:bg-white/15 border border-white/10"
                   >
-                    Back to Spotlight
+                    回到聚光燈
                   </button>
                 </div>
               </div>

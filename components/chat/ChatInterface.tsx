@@ -21,8 +21,8 @@ export function ChatInterface({ mission }: { mission?: ProcessedMission | null }
     {
       id: "intro",
       role: "model",
-      content: "Hi! I'm Yuqi! I-DLE is going on a World Tour! 🌍 Can you help me practice English before we go to New York? ✨",
-      translation: "嗨！我是雨琦！I-DLE 要去世界巡演啦！🌍 你能在我们要去纽约之前帮我练习英语吗？✨"
+      content: "翻譯官小助手～World Tour is coming and I'm sooo nervous. I'm scared my English won't be good. Can you practice with me? ✨🦒",
+      translation: "翻譯官小助手～世巡要開始了，我好緊張，怕英文說不好。可以陪我練習嗎？✨🦒"
     }
   ]);
   const [input, setInput] = useState("");
@@ -45,7 +45,7 @@ export function ChatInterface({ mission }: { mission?: ProcessedMission | null }
       {
         id: "mission_intro",
         role: "model",
-        content: `Mission time! ✨ ${question}\n\nTry to use these words: ${words.join(", ")}`,
+        content: `曲目時間到！✨\n${question}\n\n翻譯官小助手～回覆時盡量用到這些單字：${words.join(", ")}`,
         translation: undefined
       }
     ]);
@@ -89,7 +89,7 @@ export function ChatInterface({ mission }: { mission?: ProcessedMission | null }
       const usedMissionWords = mission.keywords.filter(k => userMessage.toLowerCase().includes(k.word.toLowerCase()));
       if (usedMissionWords.length > 0) {
         xpGain += 10;
-        bonusReason = "Mission bonus!";
+        bonusReason = "曲目加成！";
         usedMissionWords.forEach(k => {
           practiceWord({
             word: k.word,
@@ -107,7 +107,7 @@ export function ChatInterface({ mission }: { mission?: ProcessedMission | null }
     const usedHint = hints.find(h => userMessage.toLowerCase().includes(h.toLowerCase()));
     if (usedHint) {
       xpGain += 10;
-      if (!bonusReason) bonusReason = "Bonus!";
+      if (!bonusReason) bonusReason = "加成！";
       playSfx("success");
     }
 
@@ -165,8 +165,8 @@ export function ChatInterface({ mission }: { mission?: ProcessedMission | null }
         {
           id: Date.now().toString(),
           role: "model",
-          content: "Opps! My connection is a bit spotty! 🎤 Can you say that again?",
-          translation: "哎呀！信号不太好！🎤 你能再说一遍吗？"
+          content: "翻譯官小助手，我這邊訊號有點飄 🎤 妳可以再說一次嗎？",
+          translation: "翻譯官小助手，我這邊訊號有點飄 🎤 妳可以再說一次嗎？"
         }
       ]);
     } finally {
@@ -198,16 +198,16 @@ export function ChatInterface({ mission }: { mission?: ProcessedMission | null }
              <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border border-white"></div>
           </div>
           <div>
-            <h3 className="font-bold text-black text-lg">Yuqi 🦒</h3>
+            <h3 className="font-bold text-black text-lg">雨琦 🦒</h3>
             <span className="text-xs text-black/70 flex items-center gap-1">
-              <Sparkles className="w-3 h-3" /> Online
+              <Sparkles className="w-3 h-3" /> 在線
             </span>
           </div>
         </div>
         <button 
           onClick={() => setShowHints(!showHints)}
           className={`p-2 rounded-full transition-colors ${showHints ? "bg-white text-idle-gold" : "bg-black/10 text-black hover:bg-black/20"}`}
-          title="Word Hints"
+          title="單字提示"
         >
           <Lightbulb className="w-5 h-5" />
         </button>
@@ -235,7 +235,7 @@ export function ChatInterface({ mission }: { mission?: ProcessedMission | null }
                 ))
               ) : (
                 <p className="text-xs text-gray-500 w-full text-center">
-                  Go to Lyrics to collect words first!
+                  先去「歌詞解碼」收集單字吧！
                 </p>
               )}
             </div>
@@ -286,7 +286,7 @@ export function ChatInterface({ mission }: { mission?: ProcessedMission | null }
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder="Say something to Yuqi..."
+            placeholder="跟雨琦說一句（用英文更好）..."
             className="flex-1 bg-gray-100 dark:bg-gray-800 rounded-full px-4 py-2 focus:outline-none focus:ring-2 focus:ring-idle-gold"
           />
           <button
@@ -341,10 +341,10 @@ function MessageBubble({ message }: { message: Message }) {
               </AnimatePresence>
               <button
                 onClick={() => setShowTranslation(!showTranslation)}
-                className="flex items-center gap-1 text-xs text-idle-purple hover:text-idle-pink transition-colors font-medium"
+                className="flex items-center gap-1 text-xs text-idle-purple hover:text-idle-pink transition-colors font-medium whitespace-nowrap"
               >
                 <Languages className="w-3 h-3" />
-                {showTranslation ? "Hide Translation" : "Show Translation"}
+                {showTranslation ? "收起翻譯" : "悄悄看翻譯 🤫"}
               </button>
             </div>
           )}

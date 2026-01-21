@@ -206,7 +206,7 @@ export default function AdminPage() {
 
     if (processed === null) return;
     if (!isProcessResult(processed)) {
-      setError("Generated JSON shape is invalid");
+        setError("生成的 JSON 格式不符合預期");
       return;
     }
 
@@ -280,9 +280,9 @@ export default function AdminPage() {
 
       setImportedMission(null);
       setProcessed(null);
-      setError("JSON shape is invalid");
+      setError("JSON 格式不符合預期");
     } catch {
-      setError("Invalid JSON");
+      setError("JSON 格式無效");
     }
   };
 
@@ -290,37 +290,37 @@ export default function AdminPage() {
     <main className="min-h-screen bg-idle-purple text-white relative">
       <Navbar />
       <div className="max-w-4xl mx-auto pt-24 pb-28 px-4">
-        <h1 className="text-3xl font-orbitron font-bold mb-2">Admin: AI Content Processor</h1>
-        <p className="text-gray-400 mb-8">Suggested difficulty: {suggestedCefr} (avg mastery {avgMastery.toFixed(2)})</p>
+        <h1 className="text-3xl font-orbitron font-bold mb-2">Admin｜AI 內容轉任務器</h1>
+        <p className="text-gray-400 mb-8">建議難度：{suggestedCefr}（平均熟練度 {avgMastery.toFixed(2)}）</p>
 
         <div className="bg-white/5 rounded-2xl border border-white/10 p-6 space-y-5">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm text-gray-300 mb-2">Admin Token</label>
+              <label className="block text-sm text-gray-300 mb-2">管理員 Token</label>
               <input
                 value={adminToken}
                 onChange={(e) => setAdminToken(e.target.value)}
                 className="w-full px-4 py-3 rounded-xl bg-black/30 border border-white/10 focus:outline-none focus:ring-2 focus:ring-idle-pink"
                 type="password"
-                placeholder="Enter token"
+                placeholder="輸入 token"
               />
             </div>
             <div>
-              <label className="block text-sm text-gray-300 mb-2">Content Type</label>
+              <label className="block text-sm text-gray-300 mb-2">內容類型</label>
               <select
                 value={type}
                 onChange={(e) => setType(e.target.value as ContentType)}
                 className="w-full px-4 py-3 rounded-xl bg-black/30 border border-white/10 focus:outline-none focus:ring-2 focus:ring-idle-pink"
               >
-                <option value="lyric">lyric</option>
-                <option value="sns">sns</option>
-                <option value="interview">interview</option>
+                <option value="lyric">歌詞</option>
+                <option value="sns">社群貼文</option>
+                <option value="interview">專訪</option>
               </select>
             </div>
           </div>
 
           <div>
-            <label className="block text-sm text-gray-300 mb-2">YouTube / IG URL (optional)</label>
+            <label className="block text-sm text-gray-300 mb-2">YouTube／IG 連結（選填）</label>
             <input
               value={mediaUrl}
               onChange={(e) => setMediaUrl(e.target.value)}
@@ -330,22 +330,22 @@ export default function AdminPage() {
           </div>
 
           <div>
-            <label className="block text-sm text-gray-300 mb-2">Raw Text</label>
+            <label className="block text-sm text-gray-300 mb-2">原始文字</label>
             <textarea
               value={rawText}
               onChange={(e) => setRawText(e.target.value)}
               className="w-full min-h-[220px] px-4 py-3 rounded-xl bg-black/30 border border-white/10 focus:outline-none focus:ring-2 focus:ring-idle-pink"
-              placeholder="Paste transcript / caption here"
+              placeholder="貼上歌詞／逐字稿／貼文內容"
             />
           </div>
 
           <div>
-            <label className="block text-sm text-gray-300 mb-2">Paste Generated JSON (optional)</label>
+            <label className="block text-sm text-gray-300 mb-2">貼上已生成的 JSON（選填）</label>
             <textarea
               value={importJson}
               onChange={(e) => setImportJson(e.target.value)}
               className="w-full min-h-[160px] px-4 py-3 rounded-xl bg-black/30 border border-white/10 focus:outline-none focus:ring-2 focus:ring-idle-pink"
-              placeholder='Paste {"title":...,"keywords":[...],"challenges":{...}}'
+              placeholder='貼上 {"title":...,"keywords":[...],"challenges":{...}}'
             />
             <div className="mt-3 flex justify-end">
               <button
@@ -353,7 +353,7 @@ export default function AdminPage() {
                 onClick={handleImportJson}
                 className="px-4 py-2 rounded-xl bg-white/10 hover:bg-white/15 border border-white/10 disabled:opacity-50"
               >
-                Load JSON
+                載入 JSON
               </button>
             </div>
           </div>
@@ -368,7 +368,7 @@ export default function AdminPage() {
               onClick={handleProcess}
               className="px-5 py-3 rounded-xl bg-idle-pink text-white font-bold disabled:opacity-50"
             >
-              {isProcessing ? "Processing..." : "Process with Gemini"}
+              {isProcessing ? "處理中…" : "用 Gemini 生成任務"}
             </button>
 
             <button
@@ -376,14 +376,14 @@ export default function AdminPage() {
               onClick={handleSave}
               className="px-5 py-3 rounded-xl bg-idle-gold text-black font-bold disabled:opacity-50"
             >
-              Save to Missions
+              加入今日演出曲目
             </button>
           </div>
         </div>
 
         {processed !== null && (
           <div className="mt-8 bg-black/30 rounded-2xl border border-white/10 p-6">
-            <h2 className="text-xl font-orbitron font-bold mb-4">Generated JSON</h2>
+            <h2 className="text-xl font-orbitron font-bold mb-4">生成結果（JSON）</h2>
             <pre className="text-xs whitespace-pre-wrap break-words text-gray-200">
               {JSON.stringify(processed, null, 2)}
             </pre>

@@ -56,7 +56,7 @@ export default function Home() {
                   style={{ background: `linear-gradient(to right, ${selectedMember.colors.primary}, ${selectedMember.colors.accent})` }}
                 />
                 <h3 className="text-2xl md:text-3xl font-orbitron font-bold mb-4" style={{ color: selectedMember.colors.accent }}>
-                  Hello from {selectedMember.name}!
+                  {selectedMember.name}：翻譯官小助手，準備上場了嗎？
                 </h3>
                 <p className="text-xl md:text-2xl text-white italic font-light">
                   {selectedMember.message}
@@ -73,7 +73,7 @@ export default function Home() {
       
       {/* Footer / Credits */}
       <footer className="py-8 text-center text-gray-500 text-sm relative z-10">
-        <p>© 2026 NEVERLAND Academy. Fan Project.</p>
+        <p>© 2026 NEVERLAND 翻譯學院。粉絲專案。</p>
       </footer>
     </main>
   );

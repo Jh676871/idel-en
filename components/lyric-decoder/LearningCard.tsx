@@ -88,11 +88,11 @@ export function LearningCard({ wordData, onClose }: LearningCardProps) {
           {/* Definitions */}
           <div className="space-y-4 mb-8">
             <div className="bg-white/5 p-4 rounded-xl border border-white/10">
-              <span className="text-xs uppercase text-gray-400 font-bold tracking-wider">English</span>
+              <span className="text-xs uppercase text-gray-400 font-bold tracking-wider">英文解釋</span>
               <p className="text-white mt-1">{wordData.definitionEn}</p>
             </div>
             <div className="bg-white/5 p-4 rounded-xl border border-white/10">
-              <span className="text-xs uppercase text-gray-400 font-bold tracking-wider">Chinese</span>
+              <span className="text-xs uppercase text-gray-400 font-bold tracking-wider">中文解釋</span>
               <p className="text-white mt-1">{wordData.definitionCn}</p>
             </div>
           </div>
@@ -101,7 +101,7 @@ export function LearningCard({ wordData, onClose }: LearningCardProps) {
           <div className="bg-black/30 p-5 rounded-xl border border-idle-gold/30 relative overflow-hidden group">
             <div className="absolute top-0 left-0 w-1 h-full bg-idle-gold" />
             <h3 className="text-idle-gold font-bold mb-3 uppercase text-sm tracking-widest flex items-center">
-              Mission Challenge
+              拍檔小考
             </h3>
             
             <p className="text-lg text-gray-200 mb-4">
@@ -122,7 +122,7 @@ export function LearningCard({ wordData, onClose }: LearningCardProps) {
                 type="text"
                 value={userAnswer}
                 onChange={(e) => setUserAnswer(e.target.value)}
-                placeholder="Type the missing word..."
+                placeholder="輸入缺少的單字…"
                 className="flex-1 bg-white/10 border border-white/20 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-idle-pink transition-colors"
                 onKeyDown={(e) => e.key === 'Enter' && checkAnswer()}
               />
@@ -130,7 +130,7 @@ export function LearningCard({ wordData, onClose }: LearningCardProps) {
                 onClick={checkAnswer}
                 className="bg-idle-pink text-white px-4 py-2 rounded-lg font-bold hover:bg-pink-600 transition-colors"
               >
-                Check
+                檢查
               </button>
             </div>
 
@@ -148,12 +148,12 @@ export function LearningCard({ wordData, onClose }: LearningCardProps) {
                   {feedback === 'correct' ? (
                     <>
                       <CheckCircle className="w-4 h-4" />
-                      <span>Correct! Perfect style!</span>
+                      <span>答對了！超有舞台感！</span>
                     </>
                   ) : (
                     <>
                       <AlertCircle className="w-4 h-4" />
-                      <span>Try again! You can do it!</span>
+                      <span>再試一次～妳可以的！</span>
                     </>
                   )}
                 </motion.div>
@@ -174,7 +174,7 @@ export function LearningCard({ wordData, onClose }: LearningCardProps) {
               )}
             >
               <Heart className={cn("w-5 h-5", saved ? "fill-gray-400" : "fill-white animate-pulse")} />
-              <span>{saved ? "Added to Collection" : "Add to My Collection"}</span>
+              <span className="whitespace-nowrap">{saved ? "已收進單字本" : "收進靈魂單字本"}</span>
             </button>
           </div>
         </div>

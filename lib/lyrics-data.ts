@@ -28,7 +28,7 @@ export const QUEENCARD_LYRICS: LyricLine[] = [
         word: "Queencard",
         phonetic: "/kwiːn kɑːrd/",
         definitionEn: "A slang term (Konglish) referring to the most popular or attractive girl at school/party.",
-        definitionCn: "校花 / 最受欢迎的女孩 (韩式英语 slang)",
+        definitionCn: "校花／最受歡迎的女孩（韓式英語 slang）",
         challenge: {
           sentence: "Everyone wants to be the ___ of the party.",
           answer: "Queencard"
@@ -46,7 +46,7 @@ export const QUEENCARD_LYRICS: LyricLine[] = [
         word: "Runway",
         phonetic: "/ˈrʌn.weɪ/",
         definitionEn: "A long platform that models walk on to show off clothes.",
-        definitionCn: "T台 / 秀场跑道",
+        definitionCn: "T 台／秀場跑道",
         challenge: {
           sentence: "The model walked down the ___ with confidence.",
           answer: "runway"
@@ -76,7 +76,7 @@ export const QUEENCARD_LYRICS: LyricLine[] = [
             word: "Spotlight",
             phonetic: "/ˈspɒt.laɪt/",
             definitionEn: "A strong light that shines on a stage performer; center of attention.",
-            definitionCn: "聚光灯 / 关注焦点",
+            definitionCn: "聚光燈／關注焦點",
             challenge: {
                 sentence: "She loves being in the ___.",
                 answer: "spotlight"
@@ -100,7 +100,7 @@ export const QUEENCARD_LYRICS: LyricLine[] = [
             word: "Style",
             phonetic: "/staɪl/",
             definitionEn: "A particular way of doing something or wearing clothes.",
-            definitionCn: "风格 / 时尚",
+            definitionCn: "風格／時尚",
             challenge: {
                 sentence: "I really like your unique ___.",
                 answer: "style"

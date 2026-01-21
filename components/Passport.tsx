@@ -33,12 +33,10 @@ export function Passport() {
           )}
         </div>
         <span className="font-orbitron text-sm font-bold text-white hidden md:block">
-          Passport
+          護照
         </span>
         <div className="h-4 w-[1px] bg-white/20 mx-1 hidden md:block" />
-        <span className="text-xs font-mono text-idle-gold hidden md:block">
-          LVL {level}
-        </span>
+        <span className="text-xs font-mono text-idle-gold hidden md:block">等級 {level}</span>
       </motion.button>
 
       {/* Modal Overlay */}
@@ -67,7 +65,7 @@ export function Passport() {
                   </div>
                   <div>
                     <h2 className="text-2xl font-orbitron font-bold text-white">NEVERLAND</h2>
-                    <p className="text-idle-gold font-mono text-sm tracking-widest">OFFICIAL PASSPORT</p>
+                    <p className="text-idle-gold font-mono text-sm tracking-widest">官方護照</p>
                   </div>
                 </div>
                 <button 
@@ -83,7 +81,7 @@ export function Passport() {
                 {/* XP & Level Progress */}
                 <div>
                   <div className="flex justify-between text-sm mb-2">
-                    <span className="text-gray-300">Experience Points</span>
+                    <span className="text-gray-300">經驗值</span>
                     <span className="text-idle-gold font-bold">{xp} XP</span>
                   </div>
                   <div className="h-3 bg-white/10 rounded-full overflow-hidden">
@@ -94,7 +92,7 @@ export function Passport() {
                     />
                   </div>
                   <p className="text-xs text-gray-500 mt-1 text-right">
-                    {100 - progressToNextLevel} XP to Level {level + 1}
+                    距離等級 {level + 1} 還差 {100 - progressToNextLevel} XP
                   </p>
                 </div>
 
@@ -102,13 +100,13 @@ export function Passport() {
                   <div className="bg-white/5 p-4 rounded-xl border border-white/10 flex flex-col items-center justify-center gap-2 hover:bg-white/10 transition-colors">
                     <Book className="w-6 h-6 text-idle-pink" />
                     <span className="text-2xl font-bold text-white">{wordBank.length}</span>
-                    <span className="text-xs text-gray-400">Words Mastered</span>
+                    <span className="text-xs text-gray-400">已掌握單字</span>
                   </div>
                   
                   <div className="bg-white/5 p-4 rounded-xl border border-white/10 flex flex-col items-center justify-center gap-2 hover:bg-white/10 transition-colors">
                     <MessageCircle className="w-6 h-6 text-blue-400" />
                     <span className="text-2xl font-bold text-white">{chatCount}</span>
-                    <span className="text-xs text-gray-400">Chats Completed</span>
+                    <span className="text-xs text-gray-400">完成陪練</span>
                   </div>
                 </div>
 
@@ -119,8 +117,8 @@ export function Passport() {
                       <Ticket className="w-6 h-6 text-idle-pink" />
                     </div>
                     <div>
-                      <h4 className="font-bold text-white">Draw Tickets</h4>
-                      <p className="text-xs text-gray-400">Earned every 50 XP</p>
+                      <h4 className="font-bold text-white">抽卡券</h4>
+                      <p className="text-xs text-gray-400">每累積 50 XP 獲得 1 張</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
@@ -136,7 +134,7 @@ export function Passport() {
                      className="flex items-center justify-center gap-2 py-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 transition-colors"
                    >
                      <Grid className="w-4 h-4 text-white" />
-                     <span className="font-bold text-white text-sm">My Binder</span>
+                     <span className="font-bold text-white text-sm">寶藏盒</span>
                    </a>
                    <button
                      onClick={() => {
@@ -151,14 +149,14 @@ export function Passport() {
                      }`}
                    >
                      <Sparkles className="w-4 h-4" />
-                     <span className="font-bold text-sm">Draw Card</span>
+                     <span className="font-bold text-sm">抽一張</span>
                    </button>
                 </div>
               </div>
 
               {/* Footer */}
               <div className="bg-black/20 p-4 text-center border-t border-white/5">
-                <p className="text-xs text-gray-500 font-mono">ID: {passportId}-NVRLND</p>
+                <p className="text-xs text-gray-500 font-mono">護照編號：{passportId}-NVRLND</p>
               </div>
             </motion.div>
           </>

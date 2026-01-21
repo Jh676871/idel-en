@@ -23,14 +23,14 @@ export default function MissionPlayerPage() {
       <div className="max-w-6xl mx-auto pt-24 pb-28 px-4">
         {!mission ? (
           <div className="bg-white/5 rounded-2xl border border-white/10 p-8">
-            <div className="text-xl font-orbitron font-bold">Mission not found</div>
-            <div className="text-gray-400 text-sm mt-2">Go back to Missions and select one.</div>
+            <div className="text-xl font-orbitron font-bold">找不到曲目</div>
+            <div className="text-gray-400 text-sm mt-2">回到「今日演出曲目」挑一首來練吧。</div>
             <div className="mt-5">
               <Link
                 href="/missions"
                 className="inline-flex px-4 py-2 rounded-xl bg-idle-pink text-white font-bold"
               >
-                Back to Missions
+                返回今日演出曲目
               </Link>
             </div>
           </div>
@@ -41,4 +41,3 @@ export default function MissionPlayerPage() {
     </main>
   );
 }
-

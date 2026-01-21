@@ -13,20 +13,20 @@ export default function MissionsPage() {
       <div className="max-w-6xl mx-auto pt-24 pb-28 px-4">
         <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-8">
           <div>
-            <h1 className="text-3xl font-orbitron font-bold">Missions</h1>
-            <p className="text-gray-400">AI-processed content ready for learning</p>
+            <h1 className="text-3xl font-orbitron font-bold">今日演出曲目</h1>
+            <p className="text-gray-400">AI 已把素材整理好，等妳帶隊友開練</p>
           </div>
           <Link
             href="/admin"
-            className="px-4 py-2 rounded-xl bg-white/10 hover:bg-white/15 border border-white/10"
+            className="px-4 py-2 rounded-xl bg-white/10 hover:bg-white/15 border border-white/10 whitespace-nowrap"
           >
-            Add Mission
+            新增曲目
           </Link>
         </div>
 
         {missions.length === 0 ? (
           <div className="bg-white/5 rounded-2xl border border-white/10 p-10 text-center text-gray-300">
-            No missions yet. Create one in Admin.
+            後台目前空空的... 快去 Admin 區挑幾首酷歌，準備今天的特訓吧！
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -38,14 +38,14 @@ export default function MissionsPage() {
                     <div className="text-sm text-gray-400 mt-1">
                       <span className="mr-3">{m.source.type}</span>
                       <span className="mr-3">{m.proficiency}</span>
-                      <span>{m.keywords.length} keywords</span>
+                      <span>{m.keywords.length} 個關鍵字</span>
                     </div>
                   </div>
                   <button
                     onClick={() => removeMission(m.id)}
                     className="text-sm text-red-300 hover:text-red-200"
                   >
-                    Remove
+                    移除
                   </button>
                 </div>
 
@@ -64,22 +64,22 @@ export default function MissionsPage() {
                   <Link
                     href={`/missions/${m.id}`}
                     onClick={() => setCurrentMission(m)}
-                    className="px-4 py-2 rounded-xl bg-idle-gold text-black font-bold"
+                    className="px-4 py-2 rounded-xl bg-idle-gold text-black font-bold whitespace-nowrap"
                   >
-                    Play Mission
+                    開始特訓
                   </Link>
                   <button
                     onClick={() => setCurrentMission(m)}
-                    className="px-4 py-2 rounded-xl bg-idle-pink text-white font-bold"
+                    className="px-4 py-2 rounded-xl bg-idle-pink text-white font-bold whitespace-nowrap"
                   >
-                    Set Current
+                    設為本日曲目
                   </button>
                   <Link
                     href="/chat"
                     onClick={() => setCurrentMission(m)}
-                    className="px-4 py-2 rounded-xl bg-white/10 hover:bg-white/15 border border-white/10"
+                    className="px-4 py-2 rounded-xl bg-white/10 hover:bg-white/15 border border-white/10 whitespace-nowrap"
                   >
-                    Go Chat
+                    去陪練
                   </Link>
                 </div>
               </div>

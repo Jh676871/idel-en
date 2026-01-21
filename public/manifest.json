@@ -1,7 +1,7 @@
 {
-  "name": "NEVERLAND Academy",
+  "name": "NEVERLAND 翻譯學院",
   "short_name": "NEVERLAND",
-  "description": "Learn English with I-DLE",
+  "description": "和 I-DLE 一起練英文（翻譯官模式）",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#1a0033",

@@ -13,6 +13,19 @@ export default function BinderPage() {
   const { unlockedCards } = progress;
   const [filter, setFilter] = useState<"All" | "Common" | "Rare" | "Super Rare">("All");
 
+  const filters: Array<{ value: "All" | "Common" | "Rare" | "Super Rare"; label: string }> = [
+    { value: "All", label: "全部" },
+    { value: "Common", label: "普通" },
+    { value: "Rare", label: "稀有" },
+    { value: "Super Rare", label: "超稀有" },
+  ];
+
+  const getRarityLabel = (rarity: "Common" | "Rare" | "Super Rare") => {
+    if (rarity === "Super Rare") return "超稀有";
+    if (rarity === "Rare") return "稀有";
+    return "普通";
+  };
+
   const filteredCards = PHOTOCARDS.filter(card => 
     filter === "All" ? true : card.rarity === filter
   );
@@ -36,10 +49,10 @@ export default function BinderPage() {
           <div>
             <h1 className="text-4xl font-orbitron font-bold text-white mb-2 flex items-center gap-3">
               <Grid className="w-8 h-8 text-idle-gold" />
-              My Binder
+              寶藏盒
             </h1>
             <p className="text-gray-400">
-              Collect all {totalCards} cards to become the Ultimate Neverland.
+              集滿 {totalCards} 張，就能成為最強 Neverland。
             </p>
           </div>
           
@@ -58,17 +71,17 @@ export default function BinderPage() {
 
         {/* Filters */}
         <div className="flex gap-2 mb-8 overflow-x-auto pb-2">
-          {(["All", "Common", "Rare", "Super Rare"] as const).map((f) => (
+          {filters.map((f) => (
             <button
-              key={f}
-              onClick={() => setFilter(f)}
+              key={f.value}
+              onClick={() => setFilter(f.value)}
               className={`px-4 py-2 rounded-full text-sm font-bold whitespace-nowrap transition-colors ${
-                filter === f 
+                filter === f.value 
                   ? "bg-idle-gold text-black shadow-[0_0_10px_rgba(255,215,0,0.3)]" 
                   : "bg-white/5 text-gray-400 hover:bg-white/10"
               }`}
             >
-              {f}
+              {f.label}
             </button>
           ))}
         </div>
@@ -104,13 +117,13 @@ export default function BinderPage() {
                           card.rarity === "Rare" ? "bg-idle-pink text-white" :
                           "bg-gray-700 text-gray-300"
                         }`}>
-                          {card.rarity}
+                          {getRarityLabel(card.rarity)}
                         </span>
                       </div>
                     ) : (
                       <div className="flex items-center justify-center gap-1 text-gray-500 text-sm">
                         <Lock className="w-3 h-3" />
-                        <span>Locked</span>
+                        <span>未解鎖</span>
                       </div>
                     )}
                   </div>

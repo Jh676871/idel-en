@@ -23,11 +23,10 @@ export default function ChatPage() {
                 className="mb-6 text-center"
             >
                 <h1 className="text-3xl font-bold font-orbitron mb-2 bg-gradient-to-r from-orange-400 to-pink-500 bg-clip-text text-transparent">
-                    AI Idol Assistant
+                    專訪陪練室
                 </h1>
                 <p className="text-gray-400 text-sm md:text-base max-w-2xl mx-auto">
-                    I-DLE is going on a World Tour! They need <span className="text-white font-bold">YOU</span> to be their English Assistant. 
-                    Help Yuqi practice English before they fly to New York! ✈️🗽
+                    雨琦正在準備紐約專訪，快幫她練習英文，給她力量！🦒
                 </p>
             </motion.div>
 

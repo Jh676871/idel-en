@@ -25,11 +25,10 @@ function CollectionContent() {
       >
         <h1 className="text-4xl md:text-5xl font-orbitron font-bold mb-4 bg-gradient-to-r from-idle-gold to-white bg-clip-text text-transparent inline-flex items-center gap-3">
           <BookOpen className="w-10 h-10 text-idle-gold" />
-          My Word Collection
+          我的強大單字庫
         </h1>
         <p className="text-gray-400 max-w-2xl mx-auto text-lg">
-          Your personal dictionary of <span className="text-idle-pink font-bold">{wordBank.length}</span> I-DLE power words! 
-          Review them to become a true fluent Neverland. ✨
+          妳已經收集了 <span className="text-idle-pink font-bold">{wordBank.length}</span> 個讓妳更接近 I-DLE 的咒語！
         </p>
       </motion.div>
 
@@ -42,10 +41,10 @@ function CollectionContent() {
             <div className="w-24 h-24 rounded-full bg-idle-purple/50 flex items-center justify-center mb-6 animate-pulse">
                 <Sparkles className="w-12 h-12 text-idle-gold" />
             </div>
-            <h3 className="text-2xl font-bold text-white mb-2">No words collected yet!</h3>
-            <p className="text-gray-400 mb-6">Go to the Lyrics page and find some highlighted words to add.</p>
+            <h3 className="text-2xl font-bold text-white mb-2">靈魂單字本還空空的</h3>
+            <p className="text-gray-400 mb-6">去「歌詞解碼」把亮起來的單字收進來，翻譯官小助手！</p>
             <a href="/lyrics" className="px-8 py-3 bg-idle-pink text-white rounded-full font-bold hover:bg-pink-600 transition-colors shadow-lg shadow-pink-500/20">
-                Start Collecting 🎵
+                立刻去收集 🎵
             </a>
         </motion.div>
       ) : (
@@ -76,7 +75,7 @@ function CollectionContent() {
 
                 {item.masteryLevel === 5 && (
                   <div className="absolute top-4 left-4 px-2 py-1 rounded-full text-[10px] font-bold bg-idle-gold text-black">
-                    GOLDEN
+                    金卡
                   </div>
                 )}
 
@@ -88,7 +87,7 @@ function CollectionContent() {
                   <button
                     onClick={() => playPronunciation(item.word)}
                     className="p-2 rounded-full bg-white/5 hover:bg-white/20 text-idle-pink transition-colors"
-                    title="Listen"
+                    title="聽發音"
                   >
                     <Volume2 className="w-5 h-5" />
                   </button>
@@ -100,7 +99,7 @@ function CollectionContent() {
                   </div>
 
                   <div className="flex items-center justify-between text-xs text-gray-400">
-                    <span className="font-mono">Mastery</span>
+                    <span className="font-mono">熟練度</span>
                     <span className={item.masteryLevel === 5 ? "text-idle-gold font-bold" : "text-gray-300"}>
                       {item.masteryLevel}/5
                     </span>
@@ -113,13 +112,13 @@ function CollectionContent() {
                   </div>
                   
                   <div className="flex justify-between items-center text-xs text-gray-500 mt-4 pt-4 border-t border-white/10">
-                    <span>Added: {new Date(item.addedAt).toLocaleDateString()}</span>
+                    <span>加入：{new Date(item.addedAt).toLocaleDateString()}</span>
                     <button
                       onClick={() => removeWord(item.word)}
                       className="flex items-center gap-1 text-red-400 hover:text-red-300 transition-colors opacity-0 group-hover:opacity-100"
                     >
                       <Trash2 className="w-3 h-3" />
-                      Remove
+                      移除
                     </button>
                   </div>
                 </div>

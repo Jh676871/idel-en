@@ -19,6 +19,12 @@ export function GachaModal({ isOpen, onClose }: GachaModalProps) {
   const [drawnCard, setDrawnCard] = useState<Photocard | null>(null);
   const [isFlipped, setIsFlipped] = useState(false);
 
+  const getRarityLabel = (rarity: Photocard["rarity"]) => {
+    if (rarity === "Super Rare") return "超稀有";
+    if (rarity === "Rare") return "稀有";
+    return "普通";
+  };
+
   const handleDraw = () => {
     const success = spendTicket();
     if (!success) return; // Should handle UI feedback elsewhere if no tickets
@@ -92,16 +98,16 @@ export function GachaModal({ isOpen, onClose }: GachaModalProps) {
                    <div className="w-full h-full bg-gradient-to-br from-idle-pink to-idle-purple rounded-xl shadow-[0_0_50px_rgba(255,0,127,0.4)] flex items-center justify-center border-4 border-idle-gold/30">
                      <div className="text-center">
                        <h3 className="text-3xl font-orbitron font-bold text-white mb-2">I-DLE</h3>
-                       <p className="text-idle-gold font-mono">SPECIAL PACK</p>
+                      <p className="text-idle-gold font-mono">特別包</p>
                      </div>
                    </div>
                 </div>
-                <h2 className="text-2xl font-bold text-white mb-4">Ready to unbox?</h2>
+                <h2 className="text-2xl font-bold text-white mb-4">準備拆包了嗎？</h2>
                 <button
                   onClick={handleDraw}
-                  className="px-8 py-4 bg-idle-gold text-black font-bold text-xl rounded-full hover:bg-white hover:scale-105 transition-all shadow-[0_0_20px_rgba(255,215,0,0.5)]"
+                  className="px-8 py-4 bg-idle-gold text-black font-bold text-xl rounded-full hover:bg-white hover:scale-105 transition-all shadow-[0_0_20px_rgba(255,215,0,0.5)] whitespace-nowrap"
                 >
-                  OPEN PACK (1 Ticket)
+                  打開包裹（1 張抽卡券）
                 </button>
               </motion.div>
             )}
@@ -153,7 +159,7 @@ export function GachaModal({ isOpen, onClose }: GachaModalProps) {
                     transition={{ repeat: Infinity, duration: 2 }}
                     className="text-white font-mono text-lg"
                   >
-                    Tap card to flip!
+                    點卡片翻面！
                   </motion.p>
                 ) : (
                   <motion.div
@@ -164,14 +170,14 @@ export function GachaModal({ isOpen, onClose }: GachaModalProps) {
                     <h3 className="text-3xl font-orbitron font-bold text-idle-gold mb-2">{drawnCard.name}</h3>
                     <div className="flex items-center justify-center gap-2 mb-6">
                       <span className={`px-3 py-1 rounded-full text-sm font-bold bg-white text-black`}>
-                        {drawnCard.rarity}
+                        {getRarityLabel(drawnCard.rarity)}
                       </span>
                     </div>
                     <button 
                       onClick={onClose}
                       className="px-6 py-2 border border-white/30 rounded-full hover:bg-white/10 transition-colors"
                     >
-                      Close & Keep
+                      收下並關閉
                     </button>
                   </motion.div>
                 )}

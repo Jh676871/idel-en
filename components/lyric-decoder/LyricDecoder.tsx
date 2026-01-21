@@ -26,7 +26,7 @@ export function LyricDecoder() {
              width="100%" 
              height="100%" 
              src="https://www.youtube.com/embed/7HDeem-JaSY?si=example" 
-             title="YouTube video player" 
+             title="YouTube 影片播放器" 
              frameBorder="0" 
              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
              allowFullScreen
@@ -36,7 +36,7 @@ export function LyricDecoder() {
         
         {/* Mobile-only overlay hint */}
         <div className="absolute bottom-4 text-center w-full text-gray-400 text-sm lg:hidden">
-          Scroll down for lyrics
+          往下滑看歌詞
         </div>
       </div>
 

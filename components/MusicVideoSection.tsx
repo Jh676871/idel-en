@@ -24,8 +24,8 @@ export function MusicVideoSection() {
         </div>
         
         <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black/80 to-transparent">
-          <h3 className="text-2xl font-bold font-orbitron text-white">Latest Mission Briefing</h3>
-          <p className="text-gray-300">Watch the exclusive intro video from I-DLE</p>
+          <h3 className="text-2xl font-bold font-orbitron text-white">最新任務簡報</h3>
+          <p className="text-gray-300">先看 I-DLE 的專屬開場影片，暖身一下</p>
         </div>
 
         {/* Placeholder grid pattern overlay */}

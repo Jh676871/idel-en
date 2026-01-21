@@ -14,6 +14,12 @@ export function PhotocardView({ card, isUnlocked, isFlipped = false, onFlip, siz
   const width = size === "sm" ? 120 : size === "md" ? 200 : 300;
   const height = width * 1.5;
 
+  const getRarityLabel = (rarity: Photocard["rarity"]) => {
+    if (rarity === "Super Rare") return "超稀有";
+    if (rarity === "Rare") return "稀有";
+    return "普通";
+  };
+
   return (
     <div 
       className="relative perspective-1000 cursor-pointer group"
@@ -41,7 +47,7 @@ export function PhotocardView({ card, isUnlocked, isFlipped = false, onFlip, siz
             // Locked State
             <div className="flex flex-col items-center gap-2 opacity-50">
               <Lock className="w-8 h-8 text-gray-400" />
-              <span className="text-xs font-mono text-gray-400">LOCKED</span>
+              <span className="text-xs font-mono text-gray-400">未解鎖</span>
             </div>
           )}
         </div>
@@ -70,7 +76,7 @@ export function PhotocardView({ card, isUnlocked, isFlipped = false, onFlip, siz
                     </div>
                     {card.rarity !== "Common" && (
                       <span className={`px-2 py-0.5 rounded text-[10px] font-bold bg-white text-black`}>
-                        {card.rarity}
+                        {getRarityLabel(card.rarity)}
                       </span>
                     )}
                   </div>
