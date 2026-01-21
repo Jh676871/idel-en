@@ -11,7 +11,7 @@ export function GlitchText({ text }: GlitchTextProps) {
 
   return (
     <motion.h1
-      className="glitch text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-orbitron font-black tracking-[-0.08em] text-white"
+      className="glitch text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-orbitron font-black tracking-[-0.08em] text-white"
       data-text={text}
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}

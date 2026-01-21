@@ -11,7 +11,7 @@ interface MemberSectionProps {
 
 export function MemberSection({ selectedMember, onSelectMember }: MemberSectionProps) {
   return (
-    <section className="py-20 px-4 max-w-7xl mx-auto">
+    <section className="py-20 pb-28 md:pb-20 px-4 max-w-7xl mx-auto">
       <motion.div
         initial={{ opacity: 0 }}
         whileInView={{ opacity: 1 }}

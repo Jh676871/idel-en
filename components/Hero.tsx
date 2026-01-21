@@ -14,15 +14,27 @@ export function Hero() {
         <GlitchText text="和 I-DLE 一起閃耀舞台！" />
         <span className="ml-1 text-[#ff007f] drop-shadow-[0_0_12px_rgba(255,0,127,0.8)] flicker-fast">✨</span>
       </div>
-      
-      <motion.p 
-        className="mt-6 text-lg sm:text-xl md:text-2xl font-medium text-white/80 max-w-2xl leading-relaxed"
+
+      <motion.div
+        className="mt-2 w-full max-w-2xl"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.5, duration: 0.8 }}
       >
-        嘿 Neverland！準備好擔任她們的隨行翻譯官了嗎？選擇一位隊友，開啟妳的全球巡迴吧！
-      </motion.p>
+        <div className="mt-8 py-8 px-4 rounded-2xl border-t border-idle-pink/35 bg-gradient-to-b from-idle-pink/10 via-transparent to-transparent backdrop-blur-sm">
+          <div className="text-xl sm:text-xl md:text-2xl tracking-widest">
+            <div className="font-bold text-idle-pink drop-shadow-[0_0_14px_rgba(255,0,127,0.35)]">
+              嘿 Neverland！
+            </div>
+            <div className="mt-2 font-medium text-white/80">
+              準備好擔任隨行翻譯官了嗎？
+            </div>
+            <div className="mt-2 font-semibold text-white drop-shadow-[0_0_12px_rgba(255,0,127,0.25)]">
+              開啟妳的全球巡迴吧！
+            </div>
+          </div>
+        </div>
+      </motion.div>
     </section>
   );
 }
