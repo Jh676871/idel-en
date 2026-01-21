@@ -43,6 +43,18 @@ export async function POST(req: Request) {
     let transcriptText = "";
     let isFallbackMode = false;
     let isManualMode = !!manualContent;
+    let videoTitle = "";
+
+    // Try to fetch video title for better AI context
+    try {
+        const oembedRes = await fetch(`https://noembed.com/embed?url=https://www.youtube.com/watch?v=${videoId}`);
+        const oembedData = await oembedRes.json();
+        if (oembedData && oembedData.title) {
+            videoTitle = oembedData.title;
+        }
+    } catch (e) {
+        console.warn("Failed to fetch video title:", e);
+    }
 
     if (isManualMode) {
        transcriptText = manualContent;
