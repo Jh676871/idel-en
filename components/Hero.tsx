@@ -10,16 +10,21 @@ export function Hero() {
       <div className="absolute top-0 right-0 w-[300px] h-[300px] bg-idle-purple/40 rounded-full blur-[80px] -z-20" />
 
       <motion.h1
-        className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-bold text-white font-orbitron tracking-wider drop-shadow-[0_2px_10px_rgba(255,0,127,0.3)]"
+        className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-orbitron font-black tracking-tighter bg-gradient-to-b from-white via-white to-pink-200 bg-clip-text text-transparent drop-shadow-[0_0_8px_rgba(255,255,255,0.5)]"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8 }}
       >
-        和 I-DLE 一起閃耀舞台！<span className="text-idle-pink">✨</span>
+        和{" "}
+        <span className="text-[#ff007f] drop-shadow-[0_0_12px_rgba(255,0,127,0.8)]">I-DLE</span>
+        {" "}一起
+        <span className="text-[#ff007f] drop-shadow-[0_0_12px_rgba(255,0,127,0.8)]">閃耀</span>
+        舞台！
+        <span className="text-[#ff007f] drop-shadow-[0_0_12px_rgba(255,0,127,0.8)]">✨</span>
       </motion.h1>
       
       <motion.p 
-        className="mt-6 text-lg sm:text-xl md:text-2xl text-gray-200 max-w-2xl leading-relaxed drop-shadow-[0_2px_10px_rgba(0,0,0,0.55)]"
+        className="mt-6 text-lg sm:text-xl md:text-2xl font-medium text-white/80 max-w-2xl leading-relaxed"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.5, duration: 0.8 }}

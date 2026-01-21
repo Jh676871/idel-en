@@ -24,7 +24,7 @@ const orbitron = Orbitron({
 const notoSansTc = Noto_Sans_TC({
   variable: "--font-noto-sans-tc",
   subsets: ["latin"],
-  weight: ["400", "700"],
+  weight: ["400", "700", "900"],
   display: "swap",
 });
 
