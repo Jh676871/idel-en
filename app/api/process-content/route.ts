@@ -86,7 +86,7 @@ function coerceProcessResult(value: unknown): ProcessResult | null {
     );
   };
 
-  const pairs = dm.pairs;
+  const pairs = dm?.pairs;
   if (!Array.isArray(pairs) || pairs.length < 4 || pairs.length > 10) return null;
   if (!pairs.every(isPair)) return null;
 
@@ -97,34 +97,34 @@ function coerceProcessResult(value: unknown): ProcessResult | null {
 
 function validateEnglish(result: ProcessResult): { ok: true } | { ok: false; reason: string } {
   const texts: string[] = [
-    result.title,
-    result.challenges.fillInTheBlank.sentence,
-    result.challenges.fillInTheBlank.answer,
-    result.challenges.chatChallenge.question,
-    ...result.keywords.flatMap((k) => [k.word, k.definition, k.funny_definition, k.phonetic, k.example, k.star_comment, k.cefr]),
-    ...result.challenges.definitionMatching.pairs.flatMap((p) => [p.word, p.definition]),
+    result.title || "",
+    result.challenges?.fillInTheBlank?.sentence || "",
+    result.challenges?.fillInTheBlank?.answer || "",
+    result.challenges?.chatChallenge?.question || "",
+    ...(result.keywords || []).flatMap((k) => [k.word, k.definition, k.funny_definition, k.phonetic, k.example, k.star_comment, k.cefr]),
+    ...(result.challenges?.definitionMatching?.pairs || []).flatMap((p) => [p.word, p.definition]),
   ];
 
-  if (texts.some((t) => containsHangul(t))) {
+  if (texts.some((t) => t && containsHangul(t))) {
     return { ok: false, reason: "Contains Korean/Hangul" };
   }
 
-  const answer = result.challenges.fillInTheBlank.answer.trim();
+  const answer = result.challenges?.fillInTheBlank?.answer?.trim() || "";
   if (!answer || /\s/.test(answer)) {
     return { ok: false, reason: "Fill-in answer must be a single word" };
   }
 
-  const blanks = result.challenges.fillInTheBlank.sentence.split("_____").length - 1;
+  const blanks = (result.challenges?.fillInTheBlank?.sentence || "").split("_____").length - 1;
   if (blanks !== 1) {
     return { ok: false, reason: "Fill-in sentence must contain exactly one blank (_____)" };
   }
 
-  const keywordSet = new Set(result.keywords.map((k) => k.word));
+  const keywordSet = new Set((result.keywords || []).map((k) => k.word));
   if (!keywordSet.has(answer)) {
     return { ok: false, reason: "Fill-in answer must match a keyword" };
   }
 
-  const pairWordSetOk = result.challenges.definitionMatching.pairs.every((p) => keywordSet.has(p.word));
+  const pairWordSetOk = (result.challenges?.definitionMatching?.pairs || []).every((p) => keywordSet.has(p.word));
   if (!pairWordSetOk) {
     return { ok: false, reason: "Definition matching words must be chosen from keywords" };
   }

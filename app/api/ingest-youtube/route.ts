@@ -230,9 +230,10 @@ export async function POST(req: Request) {
       prompt = `
         **ROLE**: You are "Gemini 3.0", the K-pop lyrics expert with a massive 2026 knowledge base.
         **SITUATION**: I cannot fetch the subtitles for this video (${url}), but it is likely a (G)I-DLE song or related content.
+        **VIDEO TITLE**: "${videoTitle || "Unknown Title"}"
         
         **TASK**:
-        1. **Identify the Song**: Based on the Video ID and your knowledge base, identify the song.
+        1. **Identify the Song**: Based on the Video ID and Title, identify the song.
         2. **Retrieve Lyrics**: Please use your 2026 knowledge base to reconstruct the full lyrics (English/Korean mixed as per original).
         3. **Estimate LRC**: Generate ESTIMATED timestamps. It doesn't have to be perfect, but should flow logically (Verse 1 starts ~0:15, Chorus ~0:50, etc.).
         4. **Generate Learning Content**: Create the same rich learning content (Keywords, Scenario, Quiz) as usual.
