@@ -10,10 +10,12 @@ export function Hero() {
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-idle-pink/20 rounded-full blur-[100px] -z-10" />
       <div className="absolute top-0 right-0 w-[300px] h-[300px] bg-idle-purple/40 rounded-full blur-[80px] -z-10" />
 
-      <GlitchText text="和 I-DLE 一起閃耀舞台！✨" />
+      <div className="bg-black/20 backdrop-blur-sm rounded-xl p-4 md:p-6 inline-block">
+        <GlitchText text="和 I-DLE 一起閃耀舞台！✨" />
+      </div>
       
       <motion.p 
-        className="mt-6 text-xl md:text-2xl text-gray-300 max-w-2xl"
+        className="mt-6 text-lg sm:text-xl md:text-2xl text-gray-200 max-w-2xl text-shadow-strong"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.5, duration: 0.8 }}
