@@ -25,7 +25,7 @@ function withTimeout<T>(promise: Promise<T>, ms: number, errorMsg: string): Prom
 async function generateAndParse(prompt: string, model: any, repairModel: any, sourceTag: string) {
     console.log(`[${sourceTag}] Starting Gemini generation...`);
     try {
-        const result = await withTimeout(
+        const result: any = await withTimeout(
             model.generateContent(prompt), 
             15000, 
             `[${sourceTag}] Gemini generation timed out after 15s`
@@ -38,7 +38,7 @@ async function generateAndParse(prompt: string, model: any, repairModel: any, so
         console.warn(`[${sourceTag}] First attempt failed or timed out, trying repair:`, e);
         // Retry logic with repair model (also with timeout)
         const repairPrompt = `Fix the following JSON to match the schema. \n\n${prompt}`;
-        const repairResult = await withTimeout(
+        const repairResult: any = await withTimeout(
             repairModel.generateContent(repairPrompt),
             15000,
             `[${sourceTag}] Gemini repair timed out after 15s`
