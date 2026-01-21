@@ -2,16 +2,17 @@
 
 本文件用來追蹤專案中所有需要準備的圖片與音效資產（放置於 `public/` 下，路徑以網站根目錄 `/` 為起點）。
 
-## Member Avatars
+## Member Posters (Vertical)
 
 | 項目 | 說明 |
 |---|---|
-| 用途 | 拍檔選擇、聊天介面頭像 |
-| 建議尺寸 | 400×400px（1:1） |
+| 用途 | 拍檔選擇卡片（海報風格） |
+| 建議尺寸 | 800×1200px（2:3）或 1080×1920px（9:16） |
 | 格式 | WebP（`.webp`） |
 | 路徑 | `public/assets/images/members/`（對應網址：`/assets/images/members/`） |
 | 檔名規則 | `member_[memberId].webp` |
 | memberId | `soyeon`, `miyeon`, `minnie`, `yuqi`, `shuhua` |
+| 拍攝建議 | 成員半身或全身照，頭部預留 20% 空間，確保臉部不會被頂部切到。 |
 
 ## Backgrounds
 

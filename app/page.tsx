@@ -40,32 +40,6 @@ export default function Home() {
           onSelectMember={handleMemberSelect} 
         />
 
-        {/* Welcome Message */}
-        <AnimatePresence mode="wait">
-          {selectedMember && (
-            <motion.div
-              key={selectedMember.id}
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.9 }}
-              className="max-w-4xl mx-auto px-4 py-8 text-center"
-            >
-              <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-8 shadow-2xl relative overflow-hidden">
-                <div 
-                  className="absolute inset-0 opacity-10"
-                  style={{ background: `linear-gradient(to right, ${selectedMember.colors.primary}, ${selectedMember.colors.accent})` }}
-                />
-                <h3 className="text-2xl md:text-3xl font-orbitron font-bold mb-4" style={{ color: selectedMember.colors.accent }}>
-                  {selectedMember.displayName}：翻譯官小助手，準備上場了嗎？
-                </h3>
-                <p className="text-xl md:text-2xl text-white italic font-light">
-                  {selectedMember.message}
-                </p>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-
         <MusicVideoSection />
         
         <StartSection />

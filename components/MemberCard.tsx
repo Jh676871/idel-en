@@ -65,6 +65,25 @@ export function MemberCard({ member, isSelected, onSelect, index }: MemberCardPr
         </p>
       </div>
 
+      {/* 5. Car Window Animation Panel */}
+      <motion.div
+        initial={{ y: "100%" }}
+        animate={{ y: isSelected ? "0%" : "100%" }}
+        transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+        className="absolute bottom-0 left-0 right-0 bg-black/60 backdrop-blur-xl z-30 p-6 flex flex-col items-center text-center border-t border-white/10"
+      >
+        {/* Handle Bar */}
+        <div className="w-12 h-1 bg-pink-500/50 rounded-full mb-4" />
+        
+        {/* Content */}
+        <h3 className="text-white font-bold tracking-widest uppercase text-xl font-orbitron mb-2">
+          {displayName}
+        </h3>
+        <p className="text-white text-sm leading-relaxed font-medium">
+          {member.message}
+        </p>
+      </motion.div>
+
       {/* Optional: Subtle flash on select */}
       {isSelected && (
          <motion.div 
