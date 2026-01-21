@@ -61,4 +61,13 @@ export interface ProcessedMission {
   title: string;
   keywords: ProcessedKeyword[];
   challenges: ProcessedChallenges;
+  // New fields for Content Hub
+  lrcData?: Array<{ timestamp: string; content: string }>; // LRC format timestamps
+  quiz?: Array<{
+    question: string;
+    options: string[];
+    correctAnswer: string;
+  }>;
+  mentor?: string; // Assigned member mentor
+  status?: "locked" | "new" | "completed"; // Mission progress
 }
