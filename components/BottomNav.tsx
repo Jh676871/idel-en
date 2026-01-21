@@ -25,15 +25,21 @@ export function BottomNav() {
               key={item.href}
               href={item.href}
               className={`flex flex-col items-center justify-center w-full h-full space-y-1 ${
-                isActive ? "text-idle-pink" : "text-gray-400"
+                isActive ? "text-idle-pink drop-shadow-[0_0_10px_rgba(255,0,127,0.55)]" : "text-gray-400"
               }`}
             >
               <div className="relative">
-                <item.icon className={`w-6 h-6 ${isActive ? "stroke-[2.5px]" : "stroke-2"}`} />
+                <item.icon
+                  className={`w-6 h-6 ${
+                    isActive
+                      ? "stroke-[2.5px] drop-shadow-[0_0_12px_rgba(255,0,127,0.9)]"
+                      : "stroke-2"
+                  }`}
+                />
                 {isActive && (
                   <motion.div
                     layoutId="nav-glow"
-                    className="absolute inset-0 bg-idle-pink/50 blur-lg rounded-full"
+                    className="absolute inset-0 bg-idle-pink/70 blur-xl rounded-full"
                     transition={{ duration: 0.3 }}
                   />
                 )}

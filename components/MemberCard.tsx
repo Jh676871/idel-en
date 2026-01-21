@@ -42,8 +42,8 @@ export function MemberCard({ member, isSelected, onSelect, index }: MemberCardPr
       
       {/* Card Content - Glassmorphism */}
       <div className={cn(
-        "relative bg-black/60 backdrop-blur-sm border border-white/10 p-6 rounded-xl flex flex-col items-center h-full transition-all duration-300",
-        isSelected ? "bg-black/70 border-white/20 ring-1 ring-white/15" : "hover:bg-black/65"
+        "relative bg-black/60 backdrop-blur-sm border border-idle-pink/30 p-6 rounded-xl flex flex-col items-center h-full transition-all duration-300",
+        isSelected ? "bg-black/70 border-idle-pink/60 ring-1 ring-idle-pink/25" : "hover:bg-black/65"
       )}>
         <div className={cn(
           "w-24 h-24 rounded-full mb-4 p-[2px] transition-all duration-300",

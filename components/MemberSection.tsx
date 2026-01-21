@@ -18,10 +18,10 @@ export function MemberSection({ selectedMember, onSelectMember }: MemberSectionP
         viewport={{ once: true }}
         className="text-center mb-12"
       >
-        <h2 className="text-3xl md:text-5xl font-bold font-orbitron mb-4 text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-400">
-          選擇妳的專屬拍檔 🎤
+        <h2 className="text-3xl md:text-5xl font-bold font-orbitron mb-4 text-white tracking-wider drop-shadow-[0_2px_10px_rgba(255,0,127,0.22)]">
+          選擇妳的專屬拍檔 <span className="text-idle-gold">🎤</span>
         </h2>
-        <div className="h-1 w-24 bg-idle-pink mx-auto rounded-full" />
+        <div className="h-1 w-24 mx-auto rounded-full bg-gradient-to-r from-idle-pink via-idle-gold to-idle-pink shadow-[0_0_18px_rgba(255,0,127,0.35)]" />
       </motion.div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
