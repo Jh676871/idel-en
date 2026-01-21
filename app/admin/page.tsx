@@ -290,6 +290,7 @@ export default function AdminPage() {
     <main className="min-h-screen bg-idle-purple text-white relative">
       <Navbar />
       <div className="max-w-4xl mx-auto pt-24 pb-28 px-4">
+        <div className="text-[11px] font-mono tracking-[0.35em] text-gray-400 mb-2">ADMIN / AI MISSION MAKER</div>
         <h1 className="text-3xl font-orbitron font-bold mb-2">Admin｜AI 內容轉任務器</h1>
         <p className="text-gray-400 mb-8">建議難度：{suggestedCefr}（平均熟練度 {avgMastery.toFixed(2)}）</p>
 

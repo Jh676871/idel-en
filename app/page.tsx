@@ -56,7 +56,7 @@ export default function Home() {
                   style={{ background: `linear-gradient(to right, ${selectedMember.colors.primary}, ${selectedMember.colors.accent})` }}
                 />
                 <h3 className="text-2xl md:text-3xl font-orbitron font-bold mb-4" style={{ color: selectedMember.colors.accent }}>
-                  {selectedMember.name}：翻譯官小助手，準備上場了嗎？
+                  {selectedMember.displayName}：翻譯官小助手，準備上場了嗎？
                 </h3>
                 <p className="text-xl md:text-2xl text-white italic font-light">
                   {selectedMember.message}

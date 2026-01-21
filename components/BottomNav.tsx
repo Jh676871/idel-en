@@ -6,10 +6,10 @@ import { Home, Target, BookOpen, Grid } from "lucide-react";
 import { motion } from "framer-motion";
 
 const navItems = [
-  { name: "我的舞台", href: "/", icon: Home },
-  { name: "巡迴挑戰", href: "/missions", icon: Target },
-  { name: "靈魂單字本", href: "/collection", icon: BookOpen },
-  { name: "寶藏盒", href: "/binder", icon: Grid },
+  { en: "HOME", zh: "我的舞台", href: "/", icon: Home },
+  { en: "MISSIONS", zh: "巡迴挑戰", href: "/missions", icon: Target },
+  { en: "WORDS", zh: "靈魂單字", href: "/collection", icon: BookOpen },
+  { en: "BINDER", zh: "寶藏盒", href: "/binder", icon: Grid },
 ];
 
 export function BottomNav() {
@@ -22,7 +22,7 @@ export function BottomNav() {
           const isActive = pathname === item.href;
           return (
             <Link
-              key={item.name}
+              key={item.href}
               href={item.href}
               className={`flex flex-col items-center justify-center w-full h-full space-y-1 ${
                 isActive ? "text-idle-pink" : "text-gray-400"
@@ -38,7 +38,10 @@ export function BottomNav() {
                   />
                 )}
               </div>
-              <span className="text-[10px] font-medium whitespace-nowrap">{item.name}</span>
+              <span className="flex flex-col items-center leading-[1]">
+                <span className="text-[10px] font-bold tracking-widest whitespace-nowrap">{item.en}</span>
+                <span className="text-[9px] opacity-80 whitespace-nowrap">({item.zh})</span>
+              </span>
             </Link>
           );
         })}

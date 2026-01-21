@@ -22,11 +22,12 @@ export default function ChatPage() {
                 animate={{ opacity: 1, y: 0 }}
                 className="mb-6 text-center"
             >
+                <div className="text-[11px] font-mono tracking-[0.35em] text-gray-400 mb-2">INTERVIEW PRACTICE</div>
                 <h1 className="text-3xl font-bold font-orbitron mb-2 bg-gradient-to-r from-orange-400 to-pink-500 bg-clip-text text-transparent">
                     專訪陪練室
                 </h1>
                 <p className="text-gray-400 text-sm md:text-base max-w-2xl mx-auto">
-                    雨琦正在準備紐約專訪，快幫她練習英文，給她力量！🦒
+                    YUQI 正在準備 NYC Interview，World Tour 前快幫她練習英文，給她力量！🦒
                 </p>
             </motion.div>
 

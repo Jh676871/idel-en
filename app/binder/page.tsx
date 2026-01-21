@@ -47,6 +47,7 @@ export default function BinderPage() {
         {/* Header */}
         <div className="flex flex-col md:flex-row justify-between items-end mb-8 gap-4 border-b border-white/10 pb-6">
           <div>
+            <div className="text-[11px] font-mono tracking-[0.35em] text-gray-400 mb-2">BINDER</div>
             <h1 className="text-4xl font-orbitron font-bold text-white mb-2 flex items-center gap-3">
               <Grid className="w-8 h-8 text-idle-gold" />
               寶藏盒

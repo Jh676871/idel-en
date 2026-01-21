@@ -53,7 +53,7 @@ export function MemberCard({ member, isSelected, onSelect, index }: MemberCardPr
             <User className="w-12 h-12 text-gray-400" />
         </div>
         
-        <h3 className="text-xl font-bold font-orbitron text-white mb-1">{member.name}</h3>
+        <h3 className="text-xl font-bold font-orbitron text-white mb-1">{member.displayName}</h3>
         <p className="text-sm text-gray-400 tracking-widest whitespace-nowrap">{member.role}</p>
         
         <div className={cn(

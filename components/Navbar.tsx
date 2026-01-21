@@ -2,13 +2,14 @@
 
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { Music, MessageCircle, Heart, Menu } from "lucide-react";
+import { Home, Target, Heart, Grid, Menu } from "lucide-react";
 import { useState } from "react";
 
 const navItems = [
-  { name: "歌詞解碼", href: "/lyrics", icon: Music },
-  { name: "專訪陪練", href: "/chat", icon: MessageCircle },
-  { name: "靈魂單字本", href: "/collection", icon: Heart },
+  { en: "HOME", zh: "我的舞台", href: "/", icon: Home },
+  { en: "MISSIONS", zh: "巡迴挑戰", href: "/missions", icon: Target },
+  { en: "WORDS", zh: "靈魂單字", href: "/collection", icon: Heart },
+  { en: "BINDER", zh: "寶藏盒", href: "/binder", icon: Grid },
 ];
 
 export function Navbar() {
@@ -30,13 +31,16 @@ export function Navbar() {
             <div className="ml-10 flex items-baseline space-x-8">
               {navItems.map((item) => (
                 <Link
-                  key={item.name}
+                  key={item.href}
                   href={item.href}
                   className="relative group px-3 py-2 text-sm font-medium text-gray-300 hover:text-white transition-colors"
                 >
                   <span className="flex items-center space-x-2">
                     <item.icon className="w-4 h-4" />
-                    <span className="whitespace-nowrap">{item.name}</span>
+                    <span className="whitespace-nowrap">
+                      <span className="font-bold tracking-widest">{item.en}</span>
+                      <span className="ml-1 text-[10px] text-gray-400">({item.zh})</span>
+                    </span>
                   </span>
                   <span className="absolute bottom-0 left-0 w-full h-0.5 bg-idle-pink transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300" />
                 </Link>
@@ -68,12 +72,15 @@ export function Navbar() {
         <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
           {navItems.map((item) => (
             <Link
-              key={item.name}
+              key={item.href}
               href={item.href}
               className="flex items-center space-x-2 px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-white/10"
             >
               <item.icon className="w-5 h-5" />
-              <span className="whitespace-nowrap">{item.name}</span>
+              <span className="whitespace-nowrap">
+                <span className="font-bold tracking-widest">{item.en}</span>
+                <span className="ml-1 text-[10px] text-gray-400">({item.zh})</span>
+              </span>
             </Link>
           ))}
         </div>

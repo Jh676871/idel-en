@@ -1,6 +1,7 @@
 export interface Member {
   id: string;
   name: string;
+  displayName: string;
   role: string;
   colors: {
     primary: string;
@@ -14,7 +15,8 @@ export interface Member {
 export const MEMBERS: Member[] = [
   {
     id: 'soyeon',
-    name: "素妍",
+    name: "Soyeon",
+    displayName: "SOYEON (小娟)",
     role: "隊長／饒舌",
     colors: {
       primary: "#1a0033", // Deep Purple
@@ -26,7 +28,8 @@ export const MEMBERS: Member[] = [
   },
   {
     id: 'miyeon',
-    name: "美延",
+    name: "Miyeon",
+    displayName: "MIYEON (薇娟)",
     role: "主唱",
     colors: {
       primary: "#be185d", // Pink
@@ -38,7 +41,8 @@ export const MEMBERS: Member[] = [
   },
   {
     id: 'minnie',
-    name: "敏妮",
+    name: "Minnie",
+    displayName: "MINNIE",
     role: "主唱",
     colors: {
       primary: "#4338ca", // Indigo
@@ -50,7 +54,8 @@ export const MEMBERS: Member[] = [
   },
   {
     id: 'yuqi',
-    name: "雨琦",
+    name: "Yuqi",
+    displayName: "YUQI (雨琦)",
     role: "領舞",
     colors: {
       primary: "#ea580c", // Orange
@@ -62,7 +67,8 @@ export const MEMBERS: Member[] = [
   },
   {
     id: 'shuhua',
-    name: "舒華",
+    name: "Shuhua",
+    displayName: "SHUHUA (舒華)",
     role: "門面",
     colors: {
       primary: "#0891b2", // Cyan

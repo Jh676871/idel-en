@@ -23,12 +23,13 @@ function CollectionContent() {
         animate={{ opacity: 1, y: 0 }}
         className="text-center mb-12"
       >
+        <div className="text-[11px] font-mono tracking-[0.35em] text-gray-400 mb-2">MY WORD BANK</div>
         <h1 className="text-4xl md:text-5xl font-orbitron font-bold mb-4 bg-gradient-to-r from-idle-gold to-white bg-clip-text text-transparent inline-flex items-center gap-3">
           <BookOpen className="w-10 h-10 text-idle-gold" />
           我的強大單字庫
         </h1>
         <p className="text-gray-400 max-w-2xl mx-auto text-lg">
-          妳已經收集了 <span className="text-idle-pink font-bold">{wordBank.length}</span> 個讓妳更接近 I-DLE 的咒語！
+          妳已經收集了 <span className="text-idle-pink font-bold">{wordBank.length}</span> 個讓妳更接近 I-DLE、點亮 Neverland 的咒語！
         </p>
       </motion.div>
 

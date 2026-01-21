@@ -16,8 +16,9 @@ export function StartSection() {
         <div className="absolute inset-0 bg-gradient-to-r from-idle-pink via-purple-500 to-idle-gold rounded-full blur opacity-75 group-hover:opacity-100 group-hover:blur-md transition-all duration-300 animate-pulse" />
         <div className="relative bg-black rounded-full px-8 py-4 border border-white/20 flex items-center space-x-3 group-hover:bg-black/80 transition-colors">
           <Sparkles className="w-6 h-6 text-idle-gold animate-spin-slow" />
-          <span className="text-xl font-bold font-orbitron text-white tracking-wider uppercase">
-            開始巡迴挑戰
+          <span className="flex flex-col items-center leading-none">
+            <span className="text-xl font-bold font-orbitron text-white tracking-wider uppercase whitespace-nowrap">START WORLD TOUR</span>
+            <span className="text-[11px] text-gray-300 whitespace-nowrap">開始巡迴挑戰</span>
           </span>
           <Sparkles className="w-6 h-6 text-idle-gold animate-spin-slow" />
         </div>

@@ -13,8 +13,9 @@ export default function MissionsPage() {
       <div className="max-w-6xl mx-auto pt-24 pb-28 px-4">
         <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-8">
           <div>
+            <div className="text-[11px] font-mono tracking-[0.35em] text-gray-400 mb-2">MISSIONS</div>
             <h1 className="text-3xl font-orbitron font-bold">今日演出曲目</h1>
-            <p className="text-gray-400">AI 已把素材整理好，等妳帶隊友開練</p>
+            <p className="text-gray-400">AI 已把 World Tour 素材整理好，等妳帶隊友開練</p>
           </div>
           <Link
             href="/admin"
