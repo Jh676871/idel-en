@@ -49,7 +49,7 @@ export default function RootLayout({
   return (
     <html lang="zh-Hant" className="dark">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${orbitron.variable} ${notoSansTc.variable} antialiased text-white pb-16 md:pb-0`}
+        className={`${geistSans.variable} ${geistMono.variable} ${orbitron.variable} ${notoSansTc.variable} antialiased text-white pb-16 md:pb-0 text-shadow-soft`}
       >
         <div className="fixed inset-0 -z-10">
           <picture>
@@ -60,7 +60,7 @@ export default function RootLayout({
               className="absolute inset-0 h-full w-full object-cover"
             />
           </picture>
-          <div className="absolute inset-0 bg-[#1a0033]/60 backdrop-blur-[25px]" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(26,0,51,0.40)_0%,rgba(26,0,51,0.55)_45%,rgba(26,0,51,0.70)_100%)] backdrop-blur-[10px]" />
         </div>
 
         <div className="relative z-10">

@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { User } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Member } from "@/lib/constants";
 
@@ -54,7 +55,11 @@ export function MemberCard({ member, isSelected, onSelect, index }: MemberCardPr
             "w-full h-full rounded-full overflow-hidden border border-white/20 bg-white/10 backdrop-blur-md",
             isSelected ? "border-white/35" : "group-hover:border-white/30"
           )}>
-            {/* <!-- Replace with actual member photo here --> */}
+            <div className="relative w-full h-full flex items-center justify-center">
+              <div className="absolute inset-0 bg-white/10 animate-pulse" />
+              <User className="w-10 h-10 text-white/45" />
+              {/* <!-- Replace with actual member photo here --> */}
+            </div>
           </div>
         </div>
         
