@@ -16,6 +16,15 @@ export function Navbar() {
 
   return (
     <nav className="fixed top-0 w-full z-50 bg-idle-purple/80 backdrop-blur-md border-b border-white/10">
+      {/* Mobile Menu Overlay */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: isOpen ? 1 : 0 }}
+        transition={{ duration: 0.3 }}
+        className={`fixed inset-0 bg-black/50 h-screen w-screen -z-10 ${isOpen ? "block" : "hidden"}`}
+        onClick={() => setIsOpen(false)}
+      />
+
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-14 md:h-16">
           <div className="flex items-center">
@@ -69,6 +78,7 @@ export function Navbar() {
           open: { opacity: 1, height: "auto" },
           closed: { opacity: 0, height: 0 },
         }}
+        transition={{ duration: 0.3 }}
         className="md:hidden overflow-hidden bg-idle-purple/95"
       >
         <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">

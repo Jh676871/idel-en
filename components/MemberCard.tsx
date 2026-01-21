@@ -51,21 +51,27 @@ export function MemberCard({ member, isSelected, onSelect, index }: MemberCardPr
       >
         <div
           className={cn(
-            "relative overflow-hidden rounded-2xl bg-black/40 backdrop-blur-md p-6 flex flex-col items-center transition-colors duration-300 min-h-[280px] sm:min-h-[260px]",
-            isSelected ? "bg-black/55" : "group-hover:bg-black/45"
+            "relative overflow-hidden rounded-2xl p-6 flex flex-col items-center transition-colors duration-300 min-h-[280px] sm:min-h-[260px]",
+            isSelected ? "bg-black/20" : "group-hover:bg-black/10"
           )}
         >
+          {/* Background Image */}
           {!avatarError && (
             <img
               src={avatarSrc}
               alt=""
               className={cn(
-                "absolute inset-0 w-full h-full object-cover scale-[2.5] blur-2xl opacity-40 z-0 pointer-events-none select-none"
+                "absolute inset-0 w-full h-full object-cover scale-110 opacity-30 blur-sm z-0 pointer-events-none select-none transition-transform duration-700",
+                isSelected ? "scale-125 opacity-40" : "group-hover:scale-115 group-hover:opacity-35"
               )}
               loading="lazy"
               onError={() => setAvatarErrorSrc(avatarSrc)}
             />
           )}
+          
+          {/* Dark Overlay for Text Readability */}
+          <div className="absolute inset-0 bg-black/40 z-0 pointer-events-none" />
+
           <div
             className="absolute inset-0 pointer-events-none z-[1]"
             style={{
