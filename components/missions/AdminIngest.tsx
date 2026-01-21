@@ -210,7 +210,7 @@ export function AdminIngest() {
                   </span>
                 </div>
                 <p className="text-xs text-gray-500 text-center mt-2">
-                  Gemini 3.0 正在掃描舞台、拆解音軌與建立語義地圖...
+                  {loadingText}
                 </p>
               </div>
             )}

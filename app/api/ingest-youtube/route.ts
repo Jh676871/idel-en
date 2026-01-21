@@ -5,19 +5,47 @@ import { AI_CONFIG } from "@/config/ai-config";
 
 const genAI = new GoogleGenerativeAI(AI_CONFIG.apiKey);
 
-// Helper for safe JSON parsing
-function safeJsonParse(text: string) {
-  try {
-    return JSON.parse(text);
-  } catch {
-    const start = text.indexOf("{");
-    const end = text.lastIndexOf("}");
-    if (start >= 0 && end > start) {
-      const sliced = text.slice(start, end + 1);
-      return JSON.parse(sliced);
+// Helper for timeout
+function withTimeout<T>(promise: Promise<T>, ms: number, errorMsg: string): Promise<T> {
+  return new Promise((resolve, reject) => {
+    const timer = setTimeout(() => reject(new Error(errorMsg)), ms);
+    promise
+      .then((res) => {
+        clearTimeout(timer);
+        resolve(res);
+      })
+      .catch((err) => {
+        clearTimeout(timer);
+        reject(err);
+      });
+  });
+}
+
+// Helper for Gemini Generation & Parsing (with Repair)
+async function generateAndParse(prompt: string, model: any, repairModel: any, sourceTag: string) {
+    console.log(`[${sourceTag}] Starting Gemini generation...`);
+    try {
+        const result = await withTimeout(
+            model.generateContent(prompt), 
+            15000, 
+            `[${sourceTag}] Gemini generation timed out after 15s`
+        );
+        const response = await result.response;
+        let text = response.text();
+        text = text.replace(/```json/g, "").replace(/```/g, "").trim();
+        return safeJsonParse(text);
+    } catch (e) {
+        console.warn(`[${sourceTag}] First attempt failed or timed out, trying repair:`, e);
+        // Retry logic with repair model (also with timeout)
+        const repairPrompt = `Fix the following JSON to match the schema. \n\n${prompt}`;
+        const repairResult = await withTimeout(
+            repairModel.generateContent(repairPrompt),
+            15000,
+            `[${sourceTag}] Gemini repair timed out after 15s`
+        );
+        const repairText = (await repairResult.response).text();
+        return safeJsonParse(repairText.replace(/```json/g, "").replace(/```/g, "").trim());
     }
-    throw new Error("Model did not return valid JSON");
-  }
 }
 
 export async function POST(req: Request) {
@@ -39,40 +67,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Invalid YouTube URL" }, { status: 400 });
     }
 
-    // 2. Fetch Transcript
-    let transcriptText = "";
-    let isFallbackMode = false;
-    let isManualMode = !!manualContent;
-    let videoTitle = "";
-
-    // Try to fetch video title for better AI context
-    try {
-        const oembedRes = await fetch(`https://noembed.com/embed?url=https://www.youtube.com/watch?v=${videoId}`);
-        const oembedData = await oembedRes.json();
-        if (oembedData && oembedData.title) {
-            videoTitle = oembedData.title;
-        }
-    } catch (e) {
-        console.warn("Failed to fetch video title:", e);
-    }
-
-    if (isManualMode) {
-       transcriptText = manualContent;
-    } else {
-        try {
-          const transcript = await YoutubeTranscript.fetchTranscript(videoId);
-          // Defensive check: Ensure transcript is an array and has content
-          if (!transcript || !Array.isArray(transcript) || transcript.length === 0) {
-            throw new Error("Empty transcript");
-          }
-          transcriptText = transcript.map((t) => `[${t.offset}s] ${t.text}`).join("\n");
-        } catch (e) {
-          console.warn("Transcript fetch failed, switching to AI fallback:", e);
-          isFallbackMode = true;
-        }
-    }
-
-    // 3. Define Schema (Strict JSON)
+    // Common Setup
     const responseSchema: Schema = {
       type: SchemaType.OBJECT,
       properties: {
@@ -145,10 +140,9 @@ export async function POST(req: Request) {
         error: { type: SchemaType.STRING },
         message: { type: SchemaType.STRING }
       },
-      required: ["title", "keywords", "lrcData"] // Basic requirements
+      required: ["title", "keywords", "lrcData"]
     };
 
-    // 4. Prompt Gemini (Upgraded to Gemini 3.0 Logic)
     const model = genAI.getGenerativeModel({ 
         model: AI_CONFIG.model,
         generationConfig: {
@@ -158,7 +152,6 @@ export async function POST(req: Request) {
         }
     });
 
-    // Repair model for JSON fixing
     const repairModel = genAI.getGenerativeModel({
       model: AI_CONFIG.model,
       generationConfig: {
@@ -167,22 +160,23 @@ export async function POST(req: Request) {
         temperature: 0.2,
       },
     });
-    
-    // Determine difficulty level prompt
+
     const difficultyPrompt = difficulty === "auto" 
       ? "Assess the difficulty automatically based on vocabulary complexity." 
       : `Target a difficulty level of ${difficulty} (1=Easy, 2=Medium, 3=Hard). Select keywords and quiz questions accordingly.`;
 
-    let prompt = "";
+    let data;
 
-    if (isManualMode) {
-        prompt = `
+    // --- MANUAL MODE ---
+    if (manualContent) {
+        console.log("[Manual Mode] Using user-provided lyrics.");
+        const prompt = `
         **ROLE**: You are "Gemini 3.0", the most advanced AI content engine for K-pop education. 
         Your target audience is a **12-year-old Gen Z fan** of (G)I-DLE.
         
         **INPUT CONTEXT**:
         - Provided Lyrics (Manual Input):
-        ${transcriptText.substring(0, 25000)}
+        ${manualContent.substring(0, 25000)}
   
         **TASK**:
         Analyze the input lyrics to create a "Content Hub" entry.
@@ -201,81 +195,120 @@ export async function POST(req: Request) {
         **OUTPUT FORMAT (JSON ONLY)**:
         Strictly follow the JSON schema provided.
         `;
-    } else if (!isFallbackMode) {
-      // Standard flow with transcript
-      prompt = `
-        **ROLE**: You are "Gemini 3.0", the most advanced AI content engine for K-pop education. 
-        Your target audience is a **12-year-old Gen Z fan** of (G)I-DLE.
-        
-        **INPUT CONTEXT**:
-        - YouTube Transcript (Lyrics/Content):
-        ${transcriptText.substring(0, 25000)}
-  
-        **TASK**:
-        Analyze the input to create a "Content Hub" entry.
-        You must go beyond simple translation. You must capture the **ATTITUDE**, **STYLE**, and **VIBE** of (G)I-DLE.
-        
-        **REQUIREMENTS**:
-        1. **Song Title & Artist**: Identify correctly.
-        2. **High-Precision LRC**: 
-           - Convert transcript timestamps to **[mm:ss.xx]** (centisecond precision). 
-           - Ensure lines are synchronized with the natural flow of the song/speech.
-           - **Attitude Check**: If the lyrics are sassy, keep the punctuation sassy.
-        3. **Keywords (Slang & Culture)**:
-           - Extract 5-7 keywords. 
-           - **PRIORITY**: Focus on **Slang**, **Idioms**, or **Power Words** used in pop culture (e.g., "Slay", "Vibe", "Wannabe", "Queencard").
-           - Avoid boring textbook words like "the" or "and".
-           - Definitions must be fun and relatable for a 12-year-old.
-        4. **Scenario Dialogue (Roleplay)**:
-           - Create a short, immersive interaction with a member.
-           - The member should ask the user a question related to the song's theme.
-           - Tone: Casual, confident, "Unnie" (big sister) vibe.
-        5. **Member Mentor**: Assign the most suitable member based on the song's vibe (e.g., Soyeon for fierce rap, Yuqi for deep voice/cool style).
-        6. **Quiz**: 3 questions testing comprehension or vocabulary.
-        7. **Difficulty**: ${difficultyPrompt}
-  
-        **OUTPUT FORMAT (JSON ONLY)**:
-        Strictly follow the JSON schema provided.
-      `;
-    } else {
-      // Fallback flow: AI Retrieval Mode (Enhanced)
-      prompt = `
-        **ROLE**: You are "Gemini 3.0", the K-pop lyrics expert with a massive 2026 knowledge base.
-        **SITUATION**: I cannot fetch the subtitles for this video (${url}), but it is likely a (G)I-DLE song or related content.
-        **VIDEO TITLE**: "${videoTitle || "Unknown Title"}"
-        
-        **TASK**:
-        1. **Identify the Song**: Based on the Video ID and Title, identify the song.
-        2. **Retrieve Lyrics**: Please use your 2026 knowledge base to reconstruct the full lyrics (English/Korean mixed as per original).
-        3. **Estimate LRC**: Generate ESTIMATED timestamps. It doesn't have to be perfect, but should flow logically (Verse 1 starts ~0:15, Chorus ~0:50, etc.).
-        4. **Generate Learning Content**: Create the same rich learning content (Keywords, Scenario, Quiz) as usual.
-        
-        **IF YOU CANNOT IDENTIFY THE SONG**:
-        Return a JSON with a field "error": "manual_input_needed" and a "message": "Oops! AI 暫時沒聽過這首歌。身為翻譯官的妳，能手動貼上歌詞嗎？貼上後我會立刻幫妳生成關卡！".
-        
-        **REQUIREMENTS**:
-        (Same as standard mode: Keywords, Scenario, Quiz, etc.)
-        
-        **OUTPUT FORMAT (JSON ONLY)**:
-        Strictly follow the JSON schema provided.
-      `;
-    }
+        data = await generateAndParse(prompt, model, repairModel, "Manual");
 
-    let data;
-    try {
-        const result = await model.generateContent(prompt);
-        const response = await result.response;
-        let text = response.text();
-        // Cleanup JSON
-        text = text.replace(/```json/g, "").replace(/```/g, "").trim();
-        data = safeJsonParse(text);
-    } catch (e) {
-        console.warn("First attempt failed, trying repair:", e);
-        // Retry logic with repair model
-        const repairPrompt = `Fix the following JSON to match the schema. \n\n${prompt}`; // Simplified repair prompt
-        const repairResult = await repairModel.generateContent(repairPrompt);
-        const repairText = (await repairResult.response).text();
-        data = safeJsonParse(repairText.replace(/```json/g, "").replace(/```/g, "").trim());
+    } else {
+        // --- AUTO MODE (RACE: YouTube Transcript vs Gemini Knowledge) ---
+        
+        // 1. Fetch Video Title (Fast, non-blocking for race start, but used in prompts)
+        // We'll give it a short timeout.
+        let videoTitle = "";
+        try {
+            const oembedRes = await withTimeout(
+                fetch(`https://noembed.com/embed?url=https://www.youtube.com/watch?v=${videoId}`),
+                2000,
+                "Title fetch timed out"
+            );
+            const oembedData = await oembedRes.json();
+            if (oembedData && oembedData.title) {
+                videoTitle = oembedData.title;
+            }
+        } catch (e) {
+            console.warn("Failed to fetch video title:", e);
+        }
+
+        // Define Flows
+        const youtubeFlow = async () => {
+            console.log("[YouTube Flow] Starting transcript fetch...");
+            const transcript = await withTimeout(
+                YoutubeTranscript.fetchTranscript(videoId),
+                15000,
+                "YouTube transcript fetch timed out"
+            );
+            
+            if (!transcript || !Array.isArray(transcript) || transcript.length === 0) {
+                throw new Error("Empty transcript");
+            }
+            const transcriptText = transcript.map((t) => `[${t.offset}s] ${t.text}`).join("\n");
+            console.log("[YouTube Flow] Transcript fetched. Generating prompt...");
+
+            const prompt = `
+            **ROLE**: You are "Gemini 3.0", the most advanced AI content engine for K-pop education. 
+            Your target audience is a **12-year-old Gen Z fan** of (G)I-DLE.
+            
+            **INPUT CONTEXT**:
+            - YouTube Transcript (Lyrics/Content):
+            ${transcriptText.substring(0, 25000)}
+      
+            **TASK**:
+            Analyze the input to create a "Content Hub" entry.
+            You must go beyond simple translation. You must capture the **ATTITUDE**, **STYLE**, and **VIBE** of (G)I-DLE.
+            
+            **REQUIREMENTS**:
+            1. **Song Title & Artist**: Identify correctly.
+            2. **High-Precision LRC**: 
+               - Convert transcript timestamps to **[mm:ss.xx]** (centisecond precision). 
+               - Ensure lines are synchronized with the natural flow of the song/speech.
+               - **Attitude Check**: If the lyrics are sassy, keep the punctuation sassy.
+            3. **Keywords (Slang & Culture)**:
+               - Extract 5-7 keywords. 
+               - **PRIORITY**: Focus on **Slang**, **Idioms**, or **Power Words** used in pop culture (e.g., "Slay", "Vibe", "Wannabe", "Queencard").
+               - Avoid boring textbook words like "the" or "and".
+               - Definitions must be fun and relatable for a 12-year-old.
+            4. **Scenario Dialogue (Roleplay)**:
+               - Create a short, immersive interaction with a member.
+               - The member should ask the user a question related to the song's theme.
+               - Tone: Casual, confident, "Unnie" (big sister) vibe.
+            5. **Member Mentor**: Assign the most suitable member based on the song's vibe (e.g., Soyeon for fierce rap, Yuqi for deep voice/cool style).
+            6. **Quiz**: 3 questions testing comprehension or vocabulary.
+            7. **Difficulty**: ${difficultyPrompt}
+      
+            **OUTPUT FORMAT (JSON ONLY)**:
+            Strictly follow the JSON schema provided.
+            `;
+            
+            return await generateAndParse(prompt, model, repairModel, "YouTube");
+        };
+
+        const knowledgeFlow = async () => {
+            console.log("[Knowledge Flow] Starting AI knowledge retrieval...");
+            const prompt = `
+            **ROLE**: You are "Gemini 3.0", the K-pop lyrics expert with a massive 2026 knowledge base.
+            **SITUATION**: I cannot fetch the subtitles for this video (${url}), but it is likely a (G)I-DLE song or related content.
+            **VIDEO TITLE**: "${videoTitle || "Unknown Title"}"
+            
+            **TASK**:
+            1. **Identify the Song**: Based on the Video ID and Title, identify the song.
+            2. **Retrieve Lyrics**: Please use your 2026 knowledge base to reconstruct the full lyrics (English/Korean mixed as per original).
+            3. **Estimate LRC**: Generate ESTIMATED timestamps. It doesn't have to be perfect, but should flow logically (Verse 1 starts ~0:15, Chorus ~0:50, etc.).
+            4. **Generate Learning Content**: Create the same rich learning content (Keywords, Scenario, Quiz) as usual.
+            
+            **IF YOU CANNOT IDENTIFY THE SONG**:
+            Return a JSON with a field "error": "manual_input_needed" and a "message": "Oops! AI 暫時沒聽過這首歌。身為翻譯官的妳，能手動貼上歌詞嗎？貼上後我會立刻幫妳生成關卡！".
+            
+            **REQUIREMENTS**:
+            (Same as standard mode: Keywords, Scenario, Quiz, etc.)
+            
+            **OUTPUT FORMAT (JSON ONLY)**:
+            Strictly follow the JSON schema provided.
+            `;
+            
+            return await generateAndParse(prompt, model, repairModel, "Knowledge");
+        };
+
+        try {
+            // RACE THEM!
+            console.log("Starting Parallel Processing: YouTube vs Knowledge Base");
+            data = await Promise.any([youtubeFlow(), knowledgeFlow()]);
+            console.log("Parallel Processing Winner Selected.");
+        } catch (e) {
+            console.error("All processing attempts failed:", e);
+            // If both fail, return manual input needed
+            return NextResponse.json({ 
+                error: "manual_input_needed", 
+                message: "舞台資料讀取中遇到了一點亂流... 正在切換至 AI 智慧檢索模式！如果連 AI 也找不到，請幫忙手動貼上歌詞吧！" 
+            }, { status: 422 });
+        }
     }
 
     if (data.error === "manual_input_needed") {
