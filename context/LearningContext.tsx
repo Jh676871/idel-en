@@ -101,6 +101,7 @@ interface LearningContextType {
   
   // Gacha / Unlocks
   tickets: number;
+  addTicket: (amount: number) => void;
   unlockCard: (cardId: string) => void;
   spendTicket: () => boolean;
   incrementChatCount: () => void;
@@ -273,6 +274,10 @@ export function LearningProvider({ children }: { children: ReactNode }) {
     return progress.wordBank.some(w => w.word === word);
   };
 
+  const addTicket = (amount: number) => {
+    setTickets(prev => prev + amount);
+  };
+
   const unlockCard = (cardId: string) => {
     setProgress(prev => {
       if (prev.unlockedCards.includes(cardId)) return prev;
@@ -331,6 +336,7 @@ export function LearningProvider({ children }: { children: ReactNode }) {
       removeWord,
       isSaved,
       tickets,
+      addTicket,
       unlockCard,
       spendTicket,
       incrementChatCount,

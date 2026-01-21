@@ -1,6 +1,6 @@
 "use client";
 
-export type SfxType = 'click' | 'hover' | 'success' | 'select' | 'gacha_shake' | 'gacha_open' | 'gacha_reveal';
+export type SfxType = 'click' | 'hover' | 'success' | 'error' | 'select' | 'gacha_shake' | 'gacha_open' | 'gacha_reveal';
 
 export function playSfx(type: SfxType) {
   if (typeof window === 'undefined') return;
@@ -58,6 +58,15 @@ export function playSfx(type: SfxType) {
           gain.gain.linearRampToValueAtTime(0, now + 0.5);
           osc.start(now);
           osc.stop(now + 0.5);
+          break;
+        case 'error':
+          osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(300, now);
+          osc.frequency.linearRampToValueAtTime(150, now + 0.2);
+          gain.gain.setValueAtTime(0.1, now);
+          gain.gain.linearRampToValueAtTime(0, now + 0.2);
+          osc.start(now);
+          osc.stop(now + 0.2);
           break;
         case 'gacha_shake':
           osc.type = 'square';
