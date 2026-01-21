@@ -1,10 +1,10 @@
 "use client";
 
-import { motion, useMotionValue, useTransform, useAnimation } from "framer-motion";
-import { User, Sparkles } from "lucide-react";
+import { motion } from "framer-motion";
+import { User } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Member } from "@/lib/constants";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
 interface MemberCardProps {
   member: Member;
@@ -18,142 +18,118 @@ export function MemberCard({ member, isSelected, onSelect, index }: MemberCardPr
   const [avatarErrorSrc, setAvatarErrorSrc] = useState<string | null>(null);
   const avatarError = avatarErrorSrc === avatarSrc;
 
-  // Split displayName into English and Chinese
-  // Format: "SOYEON (小娟)" -> ["SOYEON", "小娟"]
-  const nameParts = member.displayName.match(/([^(]+)(?:\(([^)]+)\))?/);
-  const englishName = nameParts ? nameParts[1].trim() : member.displayName;
-  const chineseName = nameParts && nameParts[2] ? nameParts[2].trim() : "";
-
-  // Tilt Effect
-  const x = useMotionValue(0);
-  const y = useMotionValue(0);
-  const rotateX = useTransform(y, [-100, 100], [10, -10]);
-  const rotateY = useTransform(x, [-100, 100], [-10, 10]);
-
-  // Holographic Shine
-  const controls = useAnimation();
-
-  useEffect(() => {
-    const sequence = async () => {
-      while (true) {
-        await controls.start({
-          x: ["100%", "-100%"],
-          transition: { duration: 1.5, ease: "easeInOut", delay: 3 }
-        });
-      }
-    };
-    sequence();
-  }, [controls]);
-
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    const rect = e.currentTarget.getBoundingClientRect();
-    const centerX = rect.left + rect.width / 2;
-    const centerY = rect.top + rect.height / 2;
-    x.set(e.clientX - centerX);
-    y.set(e.clientY - centerY);
-  };
-
-  const handleMouseLeave = () => {
-    x.set(0);
-    y.set(0);
-  };
-
   return (
     <motion.div
       initial={{ opacity: 0, y: 50 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ duration: 0.5, delay: index * 0.1 }}
-      style={{ perspective: 1000 }}
-      className="relative group cursor-pointer"
+      whileHover={{ scale: 1.05, y: -10 }}
       onClick={() => onSelect(member)}
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
+      className={cn(
+        "relative group cursor-pointer transition-all duration-500",
+        isSelected ? "scale-105 -translate-y-2" : ""
+      )}
     >
-      <motion.div
-        style={{ rotateX, rotateY }}
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
+      <div
         className={cn(
-          "relative overflow-hidden rounded-xl aspect-[9/14] transition-all duration-300 shadow-xl",
-          isSelected ? "ring-4 ring-[#ff007f] shadow-[0_0_30px_rgba(255,0,127,0.6)]" : "hover:shadow-2xl"
+          "absolute -inset-1 rounded-2xl blur-2xl transition-opacity duration-500",
+          isSelected ? "opacity-100" : "opacity-55 group-hover:opacity-80"
+        )}
+        style={{
+          background: `radial-gradient(circle at 30% 20%, ${member.colors.accent}40, transparent 55%), radial-gradient(circle at 70% 80%, ${member.colors.primary}66, transparent 60%)`,
+        }}
+      />
+
+      <div
+        className={cn(
+          "relative rounded-2xl bg-gradient-to-r from-idle-pink/70 via-idle-gold/50 to-idle-pink/70",
+          isSelected
+            ? "p-[2px] animate-border-pulse shadow-[0_0_24px_rgba(255,0,127,0.55),0_0_46px_rgba(255,215,0,0.22)]"
+            : "p-[1px] shadow-[0_0_16px_rgba(255,0,127,0.22)]"
         )}
       >
-        {/* Background Image - Sharp & Full Coverage */}
-        {!avatarError && (
-          <img
-            src={avatarSrc}
-            alt={member.displayName}
-            className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-            loading="lazy"
-            onError={() => setAvatarErrorSrc(avatarSrc)}
-          />
-        )}
-        
-        {/* Dark Gradient Overlay */}
-        <div 
-          className="absolute inset-0 pointer-events-none"
-          style={{
-            background: `linear-gradient(to top, rgba(26,0,51,0.9) 0%, rgba(26,0,51,0.4) 50%, rgba(26,0,51,0.1) 100%)`
-          }}
-        />
-
-        {/* Holographic Shine Overlay */}
-        <motion.div
-          animate={controls}
-          className="absolute inset-0 w-[200%] h-full opacity-30 pointer-events-none z-20"
-          style={{
-            background: "linear-gradient(115deg, transparent 40%, rgba(255,255,255,0.4) 45%, rgba(255,255,255,0.6) 50%, rgba(255,255,255,0.4) 55%, transparent 60%)",
-            left: "-100%"
-          }}
-        />
-
-        {/* Glassmorphism Info Box */}
-        <div className="absolute bottom-0 left-0 right-0 h-[30%] bg-white/5 backdrop-blur-lg border-t border-white/20 flex flex-col items-center justify-center z-10">
+        <div
+          className={cn(
+            "relative overflow-hidden rounded-2xl p-6 flex flex-col items-center transition-colors duration-300 min-h-[280px] sm:min-h-[260px]",
+            isSelected ? "bg-black/20" : "group-hover:bg-black/10"
+          )}
+        >
+          {/* Background Image */}
+          {!avatarError && (
+            <img
+              src={avatarSrc}
+              alt=""
+              className={cn(
+                "absolute inset-0 w-full h-full object-cover scale-110 opacity-30 blur-sm z-0 pointer-events-none select-none transition-transform duration-700",
+                isSelected ? "scale-125 opacity-40" : "group-hover:scale-115 group-hover:opacity-35"
+              )}
+              loading="lazy"
+              onError={() => setAvatarErrorSrc(avatarSrc)}
+            />
+          )}
           
-          {/* Avatar & Ring (Overlapping Top) */}
-          <div className="absolute -top-8 left-1/2 -translate-x-1/2">
-            <div className="relative">
-              {/* Neon Pulse Ring */}
-              <div className="absolute inset-0 rounded-full bg-gradient-to-r from-[#ff007f] to-[#7a00ff] blur-sm animate-pulse" />
-              <div className="relative w-16 h-16 rounded-full p-[2px] bg-gradient-to-r from-[#ff007f] to-[#7a00ff]">
-                <div className="w-full h-full rounded-full overflow-hidden bg-black">
-                   {!avatarError ? (
-                    <img src={avatarSrc} alt="" className="w-full h-full object-cover" />
-                   ) : (
-                    <User className="w-full h-full p-3 text-white/50" />
-                   )}
-                </div>
+          {/* Dark Overlay for Text Readability */}
+          <div className="absolute inset-0 bg-black/40 z-0 pointer-events-none" />
+
+          <div
+            className="absolute inset-0 pointer-events-none z-[1]"
+            style={{
+              background: `linear-gradient(180deg, rgba(0,0,0,0.05), rgba(0,0,0,0.55))`,
+            }}
+          />
+
+          <div
+            className={cn(
+              "relative z-10 w-24 h-24 rounded-full mb-4 p-[2px] transition-all duration-300",
+              isSelected ? "shadow-[0_0_22px_rgba(255,255,255,0.35)]" : "group-hover:shadow-[0_0_22px_rgba(255,255,255,0.25)]"
+            )}
+            style={{
+              background: `linear-gradient(135deg, ${member.colors.accent}, rgba(255,255,255,0.22))`,
+            }}
+          >
+            <div
+              className={cn(
+                "w-full h-full rounded-full overflow-hidden border border-white/20 bg-white/10 backdrop-blur-md",
+                isSelected ? "border-white/35" : "group-hover:border-white/30"
+              )}
+            >
+              <div className="relative w-full h-full flex items-center justify-center">
+                <div className="absolute inset-0 bg-white/10 animate-pulse" />
+                {!avatarError && (
+                  <img
+                    src={avatarSrc}
+                    alt={member.displayName}
+                    className="absolute inset-0 w-full h-full object-cover"
+                    loading="lazy"
+                    onError={() => setAvatarErrorSrc(avatarSrc)}
+                  />
+                )}
+                {avatarError && <User className="w-10 h-10 text-white/45" />}
               </div>
             </div>
           </div>
 
-          {/* Member Info */}
-          <div className="mt-6 text-center px-2">
-             <h3 className="text-white font-orbitron font-bold text-lg tracking-widest drop-shadow-md">
-               {englishName}
-             </h3>
-             {chineseName && (
-               <p className="text-white/80 font-serif text-sm mt-0.5 tracking-wide">
-                 {chineseName}
-               </p>
-             )}
-             <p className="text-[#ff007f] text-xs font-medium mt-1 uppercase tracking-wider">
-               {member.role}
-             </p>
-          </div>
-          
-          {/* Selection Indicator (Subtle) */}
-          {isSelected && (
-            <motion.div 
-              layoutId="selected-sparkle"
-              className="absolute bottom-2 right-2 text-[#ff007f]"
+          <h3 className="relative z-10 text-xl font-bold font-orbitron text-white mb-1 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">{member.displayName}</h3>
+          <p className="relative z-10 text-sm text-gray-200/90 tracking-widest whitespace-nowrap drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]">{member.role}</p>
+
+          <div
+            className={cn(
+              "relative z-10 mt-4 transition-all duration-300",
+              isSelected ? "opacity-100 transform translate-y-0" : "opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0"
+            )}
+          >
+            <span
+              className={cn(
+                "text-xs font-bold px-3 py-1 rounded-full transition-colors",
+                isSelected ? "bg-white text-black" : "text-white bg-white/20"
+              )}
             >
-              <Sparkles size={16} className="animate-pulse" />
-            </motion.div>
-          )}
+              {isSelected ? "已選擇" : "選擇"}
+            </span>
+          </div>
         </div>
-      </motion.div>
+      </div>
     </motion.div>
   );
 }
