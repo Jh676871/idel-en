@@ -66,6 +66,18 @@ body {
   animation: glitch-slice-b 1100ms steps(2, end) infinite, glitch-jitter 100ms steps(2, end) infinite reverse;
 }
 
+.glitch-hero::before {
+  text-shadow: -3px 0 rgba(255, 0, 80, 0.98);
+  opacity: 1;
+  animation: glitch-slice-a 760ms steps(2, end) infinite, glitch-jitter 90ms steps(2, end) infinite, glitch-flicker 2200ms steps(2, end) infinite;
+}
+
+.glitch-hero::after {
+  text-shadow: 3px 0 rgba(0, 229, 255, 0.98);
+  opacity: 0.92;
+  animation: glitch-slice-b 920ms steps(2, end) infinite, glitch-jitter 80ms steps(2, end) infinite reverse, glitch-flicker 2400ms steps(2, end) infinite reverse;
+}
+
 .glitch-rgb {
   position: relative;
   display: inline-block;
@@ -184,6 +196,50 @@ body {
   }
   100% {
     clip-path: inset(82% 0 8% 0);
+  }
+}
+
+@keyframes glitch-flicker {
+  0% {
+    opacity: 0.92;
+  }
+  10% {
+    opacity: 0.75;
+  }
+  12% {
+    opacity: 0.98;
+  }
+  30% {
+    opacity: 0.85;
+  }
+  45% {
+    opacity: 0.98;
+  }
+  60% {
+    opacity: 0.78;
+  }
+  62% {
+    opacity: 0.95;
+  }
+  100% {
+    opacity: 0.92;
+  }
+}
+
+.neon-breathe {
+  animation: neon-breathe 2600ms ease-in-out infinite;
+  will-change: filter;
+}
+
+@keyframes neon-breathe {
+  0% {
+    filter: drop-shadow(0 0 10px rgba(255, 0, 127, 0.14)) drop-shadow(0 0 22px rgba(255, 0, 127, 0.08));
+  }
+  50% {
+    filter: drop-shadow(0 0 16px rgba(255, 0, 127, 0.26)) drop-shadow(0 0 38px rgba(255, 0, 127, 0.14));
+  }
+  100% {
+    filter: drop-shadow(0 0 10px rgba(255, 0, 127, 0.14)) drop-shadow(0 0 22px rgba(255, 0, 127, 0.08));
   }
 }
 
