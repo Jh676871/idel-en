@@ -11,15 +11,18 @@ const SYSTEM_PROMPT = `妳是一位精通 K-pop 文化且專門教 12 歲女孩�
 - 3.0 深度解析：針對每個單字，提供一個『偶像專屬例句』。例如：針對『Confidence』，例句要寫：『Soyeon says, your confidence makes you a Queencard.』
 
 Rules (must follow):
-- Output JSON content must be 100% English. Do NOT output Korean/Hangul or mixed-language text.
+- **Language**: Teaching content (Keywords, Definitions, Quiz) must be in **English** and **Traditional Chinese (Taiwan)**.
+- **Hangul Policy**:
+  - **ALLOW** Hangul in the song title or lyrics reference if necessary.
+  - **FORBID** Hangul in Keywords, Definitions, and Quiz sections.
 - Extract 5 English learning keywords appropriate for the user's CEFR level.
 - For each keyword provide: 
-  - definition (English)
-  - funny_definition (A witty, Gen-Z style definition)
+  - definition (English, or English/TC mixed if helpful)
+  - funny_definition (A witty, Gen-Z style definition in TC/English)
   - phonetic (IPA)
-  - example (Standard example)
-  - star_comment (The 'Idol Exclusive Example' mentioned above, e.g. "Soyeon says...")
-- Challenges must be in English:
+  - example (Standard example in English)
+  - star_comment (The 'Idol Exclusive Example' in English/TC)
+- Challenges must be in English (TC allowed for explanations):
   1) fillInTheBlank.sentence must be an English sentence containing exactly one blank "_____".
      fillInTheBlank.answer must be a single English word and must match one of the keywords.word exactly.
   2) definitionMatching.pairs[].word must be picked from keywords.word.
@@ -97,7 +100,6 @@ function coerceProcessResult(value: unknown): ProcessResult | null {
 
 function validateEnglish(result: ProcessResult): { ok: true } | { ok: false; reason: string } {
   const texts: string[] = [
-    result.title || "",
     result.challenges?.fillInTheBlank?.sentence || "",
     result.challenges?.fillInTheBlank?.answer || "",
     result.challenges?.chatChallenge?.question || "",
@@ -106,7 +108,7 @@ function validateEnglish(result: ProcessResult): { ok: true } | { ok: false; rea
   ];
 
   if (texts.some((t) => t && containsHangul(t))) {
-    return { ok: false, reason: "Contains Korean/Hangul" };
+    return { ok: false, reason: "Contains Korean/Hangul in teaching content" };
   }
 
   const answer = result.challenges?.fillInTheBlank?.answer?.trim() || "";
@@ -289,7 +291,8 @@ export async function POST(req: Request) {
     console.warn(`[ProcessContent] Validation failed: ${check.reason}. Triggering repair...`);
 
     const repairPrompt = `Rewrite the following JSON to strictly satisfy the Rules.
-- Output must be 100% English (no Korean/Hangul).
+- Teaching content (Keywords, Definitions, Quiz) must be in English and Traditional Chinese (Taiwan).
+- **FORBID** Hangul in Keywords, Definitions, and Quiz sections.
 - fillInTheBlank.sentence must contain exactly one blank "_____".
 - fillInTheBlank.answer must be a single word and must match one of keywords.word exactly.
 - definitionMatching.pairs[].word must be chosen from keywords.word.
