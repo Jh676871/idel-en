@@ -93,7 +93,7 @@ export default function MissionsPage() {
                       )}
                       {status === "new" && (
                         <div className="bg-idle-pink/20 text-idle-pink border border-idle-pink/30 px-2 py-1 rounded-lg text-xs font-bold flex items-center gap-1 backdrop-blur-md animate-pulse">
-                          <SparklesIcon size={12} /> NEW
+                          <Sparkles size={12} /> NEW
                         </div>
                       )}
                       {status === "locked" && (
