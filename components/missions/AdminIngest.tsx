@@ -9,36 +9,36 @@ import { ProcessedMission } from "@/types";
 export function AdminIngest() {
   const [isOpen, setIsOpen] = useState(false);
   const [url, setUrl] = useState("");
-  const [difficulty, setDifficulty] = useState<"auto" | 1 | 2 | 3>("auto");
+  // const [difficulty, setDifficulty] = useState<"auto" | 1 | 2 | 3>("auto"); // Removed per instruction
   const [loading, setLoading] = useState(false);
-  const [status, setStatus] = useState<"idle" | "success" | "error" | "manual_input_needed">("idle");
+  const [status, setStatus] = useState<"idle" | "success" | "error">("idle");
   const [message, setMessage] = useState("");
   const [loadingText, setLoadingText] = useState("正在連線至 YouTube 舞台...");
   const [manualLyrics, setManualLyrics] = useState("");
   const { addMission } = useLearning();
 
   const handleIngest = async () => {
-    if (!url.trim()) return;
+    if (!url.trim() || !manualLyrics.trim()) return;
 
     setLoading(true);
     setStatus("idle");
     setMessage("");
+    setLoadingText("Gemini 3.0 魔法轉換中 ✨ (這可能需要 60 秒，請喝杯茶)...");
 
     try {
-      const res = await fetch("/api/ingest-youtube", {
+      // Use the refactored process-content API
+      const res = await fetch("/api/process-content", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ url, difficulty }),
+        body: JSON.stringify({ 
+            url, 
+            rawText: manualLyrics,
+            type: "lyric", // Optional, API infers from URL presence
+            masteryAverage: 0 // Default
+        }),
       });
 
       const data = await res.json();
-
-      if (data.error === "manual_input_needed") {
-        setStatus("manual_input_needed");
-        setMessage("舞台資料讀取中遇到了一點亂流... 正在切換至 AI 智慧檢索模式！如果連 AI 也找不到，請幫忙手動貼上歌詞吧！");
-        setLoading(false);
-        return;
-      }
 
       if (!res.ok) {
         throw new Error(data.error || "Failed to ingest");
@@ -46,55 +46,19 @@ export function AdminIngest() {
 
       // Transform into ProcessedMission
       const missionData = data.data;
-      // ... (Rest of processing)
+      
       await processMissionData(missionData);
     } catch (err: any) {
       console.error(err);
       setStatus("error");
-      let msg = err.message;
-      if (msg.includes("reading '0'") || msg.includes("undefined") || msg.includes("null")) {
-        msg = "偵測到舞台資料缺失，正在啟動 Gemini 3.0 全球知識庫進行歌詞重構...";
-      }
-      setMessage(msg);
+      setMessage(err.message);
     } finally {
-      if (status !== "manual_input_needed") {
-         setLoading(false);
-      }
+      setLoading(false);
     }
   };
 
-  const handleManualSubmit = async () => {
-    if (!manualLyrics.trim()) return;
-    setLoading(true);
-    
-    // Call a new endpoint or the same one with manual lyrics override?
-    // Actually, we can reuse process-content logic but tailored for manual text
-    // Or we can assume we need to process this raw text into the structured format.
-    // Let's reuse ingest-youtube but maybe we need a new param or endpoint?
-    // Wait, the user instruction said: "貼上後處理： 當使用者手動貼上歌詞後，再次調用 Gemini 3.0 進行單字拆解與任務生成。"
-    // This sounds like we should send the manual lyrics to be processed.
-    
-    // Let's create a specialized handler or modify ingest-youtube to accept 'manualContent'
-    // For simplicity, let's call the same endpoint but with manualContent.
-    
-    try {
-        const res = await fetch("/api/ingest-youtube", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ url, difficulty, manualContent: manualLyrics }),
-        });
-        
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.error || "Failed to process manual content");
-        
-        await processMissionData(data.data);
-    } catch (err: any) {
-        setStatus("error");
-        setMessage(err.message);
-    } finally {
-        setLoading(false);
-    }
-  };
+
+
 
   const processMissionData = async (missionData: any) => {
       const newMission: ProcessedMission = {
@@ -104,9 +68,9 @@ export function AdminIngest() {
           id: missionData.videoId,
           title: missionData.title,
           type: "lyric",
-          rawText: missionData.title, // Simplified
+          rawText: missionData.title, 
           mediaUrl: missionData.mediaUrl,
-          difficulty: missionData.difficulty,
+          difficulty: "auto", // Default
         },
         proficiency: missionData.proficiency,
         title: missionData.title,
@@ -123,10 +87,9 @@ export function AdminIngest() {
             })) || [],
           },
           chatChallenge: {
-            question: missionData.scenarioDialogue?.question || `What is the main theme of ${missionData.title}?`,
+            question: missionData.challenges?.chatChallenge?.question || `What is the main theme of ${missionData.title}?`,
           },
         },
-        // New fields
         lrcData: missionData.lrcData,
         quiz: missionData.quiz,
         mentor: missionData.mentor,
@@ -136,10 +99,9 @@ export function AdminIngest() {
 
       addMission(newMission);
       setStatus("success");
-      setMessage(`Successfully added "${missionData.title}"!`);
+      setMessage(`新舞台 "${missionData.title}" 已準備就緒！`);
       setUrl("");
       setManualLyrics("");
-      setDifficulty("auto");
   };
 
   return (
@@ -160,36 +122,34 @@ export function AdminIngest() {
             exit={{ height: 0, opacity: 0 }}
             className="bg-white/5 border border-white/10 rounded-xl p-6 backdrop-blur-sm"
           >
-            <h3 className="text-idle-pink font-bold font-orbitron mb-4">CONTENT HUB INGESTION</h3>
+            <h3 className="text-idle-pink font-bold font-orbitron mb-4">CONTENT HUB INGESTION (MANUAL MODE)</h3>
             
-            <div className="flex flex-col md:flex-row gap-4 mb-4">
+            <div className="flex flex-col gap-4 mb-4">
               <input
                 type="text"
                 value={url}
                 onChange={(e) => setUrl(e.target.value)}
-                placeholder="Paste YouTube URL here..."
-                className="flex-1 bg-black/50 border border-white/20 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-idle-pink transition-colors"
+                placeholder="YouTube URL (e.g. https://www.youtube.com/watch?v=...)"
+                className="w-full bg-black/50 border border-white/20 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-idle-pink transition-colors"
                 disabled={loading}
               />
               
-              <select
-                value={difficulty}
-                onChange={(e) => setDifficulty(e.target.value as any)}
-                className="bg-black/50 border border-white/20 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-idle-pink transition-colors"
-                disabled={loading}
-              >
-                <option value="auto">Auto (Adaptive)</option>
-                <option value="1">Level 1 (Easy)</option>
-                <option value="2">Level 2 (Medium)</option>
-                <option value="3">Level 3 (Hard)</option>
-              </select>
+              <div className="relative">
+                <textarea
+                  value={manualLyrics}
+                  onChange={(e) => setManualLyrics(e.target.value)}
+                  placeholder="在此貼上歌詞 (Lyrics)..."
+                  className="w-full h-40 bg-black/50 border border-white/20 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-idle-pink transition-colors resize-none"
+                  disabled={loading}
+                />
+              </div>
 
               <button
                 onClick={handleIngest}
-                disabled={loading || !url.trim()}
-                className="bg-idle-pink hover:bg-idle-pink/80 text-white font-bold px-6 py-3 rounded-lg flex items-center justify-center gap-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed min-w-[120px]"
+                disabled={loading || !url.trim() || !manualLyrics.trim()}
+                className="bg-idle-pink hover:bg-idle-pink/80 text-white font-bold px-6 py-4 rounded-lg flex items-center justify-center gap-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed w-full shadow-[0_0_15px_rgba(255,20,147,0.5)]"
               >
-                {loading ? <Loader2 className="animate-spin" /> : "Analyze"}
+                {loading ? <Loader2 className="animate-spin" /> : "Gemini 3.0 魔法轉換 ✨"}
               </button>
             </div>
 
@@ -231,36 +191,6 @@ export function AdminIngest() {
               </div>
             )}
 
-            {status === "manual_input_needed" && (
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="mt-4 p-4 border border-idle-pink/30 rounded-lg bg-idle-pink/5"
-              >
-                <div className="flex items-start gap-3 mb-3 text-idle-pink">
-                  <span className="text-xl">⚠️</span>
-                  <div>
-                    <p className="font-bold text-sm mb-1">Oh no! 我找不到這首歌的歌詞...</p>
-                    <p className="text-xs opacity-80">翻譯官，可以麻煩妳幫我把歌詞貼在這裡嗎？我會再試著用 Gemini 3.0 分析它！</p>
-                  </div>
-                </div>
-                
-                <textarea
-                  value={manualLyrics}
-                  onChange={(e) => setManualLyrics(e.target.value)}
-                  placeholder="Paste English/Korean lyrics here..."
-                  className="w-full h-32 bg-black/50 border border-white/20 rounded-lg p-3 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-idle-pink transition-colors mb-3"
-                />
-                
-                <button
-                  onClick={handleManualSubmit}
-                  disabled={loading || !manualLyrics.trim()}
-                  className="w-full bg-idle-pink hover:bg-idle-pink/80 text-white font-bold py-2 rounded-lg transition-all disabled:opacity-50 text-sm flex items-center justify-center gap-2"
-                >
-                  {loading ? <Loader2 size={14} className="animate-spin" /> : "Submit Manual Lyrics"}
-                </button>
-              </motion.div>
-            )}
           </motion.div>
         )}
       </AnimatePresence>

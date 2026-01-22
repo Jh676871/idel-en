@@ -33,8 +33,9 @@ Respond ONLY in structured JSON format.`;
 
 type ProcessResult = {
   title: string;
+  lrcData?: Array<{ timestamp: string; content: string }>;
   keywords: Array<{ 
-    word: string; 
+    word: string;  
     definition: string; 
     funny_definition: string;
     phonetic: string; 
@@ -94,6 +95,18 @@ function coerceProcessResult(value: unknown): ProcessResult | null {
   if (!pairs.every(isPair)) return null;
 
   if (!v.keywords.every(isKeyword)) return null;
+
+  // lrcData is optional in old flow, but required in new flow?
+  // Let's just check if it exists and is an array if present
+  if (v.lrcData !== undefined) {
+      if (!Array.isArray(v.lrcData)) return null;
+      const isLrcItem = (i: unknown): i is { timestamp: string; content: string } => {
+          if (typeof i !== "object" || i === null) return false;
+          const ir = i as Record<string, unknown>;
+          return typeof ir.timestamp === "string" && typeof ir.content === "string";
+      };
+      if (!v.lrcData.every(isLrcItem)) return null;
+  }
 
   return value as ProcessResult;
 }
@@ -155,6 +168,8 @@ function safeJsonParse(text: string) {
   }
 }
 
+export const maxDuration = 60;
+
 export async function POST(req: Request) {
   const startTime = Date.now();
   console.log(`[ProcessContent] Request started at ${new Date(startTime).toISOString()}`);
@@ -180,7 +195,35 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "rawText is required" }, { status: 400 });
     }
 
-    if (type !== "lyric" && type !== "sns" && type !== "interview") {
+    const { url } = body; // Extract URL if provided
+    let videoId = null;
+    let mediaUrl = null;
+
+    if (url) {
+        // Extract Video ID
+        const videoIdMatch = url.match(/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/);
+        videoId = videoIdMatch ? videoIdMatch[1] : null;
+        mediaUrl = url;
+    }
+
+    const prompt = url ? `
+    妳現在收到一段 I-DLE 的歌詞。請利用妳 2026 年的強大能力執行以下任務：
+    1. **時間軸重構**：根據妳對這首歌的音樂記憶，將歌詞轉換為精確的 LRC (時間點) 格式 ([mm:ss.xx])。如果不知道確切時間，請根據歌曲結構（Verse, Chorus）進行合理推算。
+    2. **核心選詞**：挑選 5 個具有舞台感、適合 12 歲孩子的重點單字，並提供中文定義與偶像例句。
+    3. **互動測驗**：生成 3 題有趣的舞台挑戰。
+    
+    **Rules (must follow)**:
+    - **Language**: Teaching content (Keywords, Definitions, Quiz) must be in **English** and **Traditional Chinese (Taiwan)**.
+    - **Hangul Policy**: ALLOW Hangul in lyrics/title, but FORBID in keywords/definitions/quiz.
+    - Output must be valid JSON matching the schema.
+    
+    User Proficiency (CEFR): ${proficiency}
+    
+    LYRICS TEXT:
+    ${rawText}
+    ` : `${SYSTEM_PROMPT}\n\nUser Proficiency (CEFR): ${proficiency}\nContent Type: ${type}\n\nTEXT:\n${rawText}`;
+    
+    if (type && type !== "lyric" && type !== "sns" && type !== "interview" && !url) {
       return NextResponse.json({ error: "Invalid type" }, { status: 400 });
     }
 
@@ -188,6 +231,17 @@ export async function POST(req: Request) {
       type: SchemaType.OBJECT,
       properties: {
         title: { type: SchemaType.STRING },
+        lrcData: {
+          type: SchemaType.ARRAY,
+          items: {
+            type: SchemaType.OBJECT,
+            properties: {
+              timestamp: { type: SchemaType.STRING },
+              content: { type: SchemaType.STRING }
+            },
+            required: ["timestamp", "content"]
+          }
+        },
         keywords: {
           type: SchemaType.ARRAY,
           minItems: 5,
@@ -247,7 +301,7 @@ export async function POST(req: Request) {
           required: ["fillInTheBlank", "definitionMatching", "chatChallenge"],
         },
       },
-      required: ["title", "keywords", "challenges"],
+      required: ["title", "lrcData", "keywords", "challenges"],
     };
 
     const model = genAI.getGenerativeModel({
@@ -281,6 +335,18 @@ export async function POST(req: Request) {
     const coerced = coerceProcessResult(json);
     if (!coerced) {
       return NextResponse.json({ error: "Model returned invalid JSON shape" }, { status: 502 });
+    }
+
+    if (url) {
+        // If it was a URL request, we need to make sure we return the fields needed by AdminIngest
+        const fullResult = {
+            ...coerced,
+            videoId,
+            mediaUrl,
+            difficulty: masteryAverage || "auto",
+            lrcData: coerced.lrcData || [] // Ensure lrcData exists
+        };
+        return NextResponse.json({ success: true, data: fullResult });
     }
 
     const check = validateEnglish(coerced);
