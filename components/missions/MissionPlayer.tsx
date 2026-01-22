@@ -6,20 +6,44 @@ import YouTube, { YouTubeEvent, YouTubePlayer } from "react-youtube";
 import { useLearning } from "@/context/LearningContext";
 import type { ProcessedMission, ProcessedKeyword } from "@/types";
 import { ChatInterface } from "@/components/chat/ChatInterface";
-import { Loader2, Menu, X, Play, Pause, Repeat, BookOpen, Mic, Volume2, Clock, Plus, Minus, Save } from "lucide-react";
+import { Loader2, Menu, X, Play, Pause, Repeat, BookOpen, Mic, Volume2, Clock, Plus, Minus, Save, Edit, Check, Undo, Zap, Music } from "lucide-react";
 
 type Stage = "spotlight" | "practice" | "real_chat" | "review";
 
 function parseLrcTimestamp(timestamp: string): number {
-  // Format: [mm:ss.xx] or mm:ss.xx
-  const clean = timestamp.replace(/[\[\]]/g, "");
-  const parts = clean.split(":");
-  if (parts.length === 2) {
-    const min = parseInt(parts[0], 10);
-    const sec = parseFloat(parts[1]);
-    return min * 60 + sec;
+  const match = timestamp.match(/\[(\d+):(\d+\.\d+)\]/);
+  if (!match) return 0;
+  return parseInt(match[1]) * 60 + parseFloat(match[2]);
+}
+
+function formatLrcTimestamp(time: number): string {
+  const m = Math.floor(time / 60);
+  const s = (time % 60).toFixed(2);
+  return `[${m.toString().padStart(2, '0')}:${s.padStart(5, '0')}]`;
+}
+
+// Linear Interpolation for timestamps
+function interpolateTimestamps(data: Array<{ timestamp: string; content: string }>) {
+  const result = [...data];
+  let lastValidIndex = -1;
+
+  for (let i = 0; i < result.length; i++) {
+    if (result[i].timestamp && result[i].timestamp !== "[]") {
+      if (lastValidIndex !== -1 && i - lastValidIndex > 1) {
+        // Found a gap
+        const startTime = parseLrcTimestamp(result[lastValidIndex].timestamp);
+        const endTime = parseLrcTimestamp(result[i].timestamp);
+        const count = i - lastValidIndex - 1;
+        const step = (endTime - startTime) / (count + 1);
+
+        for (let j = 1; j <= count; j++) {
+          result[lastValidIndex + j].timestamp = formatLrcTimestamp(startTime + step * j);
+        }
+      }
+      lastValidIndex = i;
+    }
   }
-  return 0;
+  return result;
 }
 
 function escapeRegExp(value: string) {
@@ -76,7 +100,9 @@ function LyricsScroller({
   offset,
   keywords, 
   onKeywordClick,
-  onLineClick 
+  onLineClick,
+  isProducerMode,
+  producerLrcData
 }: { 
   lrcData: Array<{ timestamp: string; content: string }>; 
   currentTime: number;
@@ -84,19 +110,22 @@ function LyricsScroller({
   keywords: ProcessedKeyword[];
   onKeywordClick: (k: ProcessedKeyword) => void;
   onLineClick: (time: number) => void;
+  isProducerMode?: boolean;
+  producerLrcData?: Array<{ timestamp: string; content: string }>;
 }) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const activeRef = useRef<HTMLDivElement>(null);
+  const dataToRender = isProducerMode && producerLrcData ? producerLrcData : lrcData;
 
   const activeIndex = useMemo(() => {
     // Find the last line that has started
     const adjustedTime = currentTime + offset;
-    for (let i = lrcData.length - 1; i >= 0; i--) {
-      const time = parseLrcTimestamp(lrcData[i].timestamp);
+    for (let i = dataToRender.length - 1; i >= 0; i--) {
+      const time = parseLrcTimestamp(dataToRender[i].timestamp);
       if (adjustedTime >= time) return i;
     }
     return -1;
-  }, [lrcData, currentTime, offset]);
+  }, [dataToRender, currentTime, offset]);
 
   useEffect(() => {
     if (activeRef.current) {
@@ -108,31 +137,47 @@ function LyricsScroller({
   }, [activeIndex]);
 
   return (
-    <div className="h-full overflow-y-auto no-scrollbar py-[40vh] space-y-6 text-center" ref={scrollRef}>
-      {lrcData.map((line, idx) => {
-        const isActive = idx === activeIndex;
-        const time = parseLrcTimestamp(line.timestamp);
-        
+    <div 
+      ref={scrollRef}
+      className="h-full overflow-y-auto px-6 py-12 space-y-8 scrollbar-hide text-center"
+    >
+      {dataToRender.map((line, index) => {
+        const isActive = index === activeIndex;
+        const isSynced = isProducerMode && line.timestamp && line.timestamp !== "[]" && line.timestamp.includes(":");
+
         return (
-          <motion.div
-            key={idx}
+          <div 
+            key={index}
             ref={isActive ? activeRef : null}
-            initial={false}
-            animate={{
-              scale: isActive ? 1.1 : 0.9,
-              opacity: isActive ? 1 : 0.3,
-              filter: isActive ? "blur(0px)" : "blur(1.5px)",
-            }}
-            onClick={() => onLineClick(time)}
             className={`
-              transition-all duration-500 cursor-pointer px-4
-              ${isActive ? "text-2xl md:text-3xl font-bold text-white py-4" : "text-lg text-gray-400 hover:opacity-60"}
+              transition-all duration-500 cursor-pointer
+              ${isActive ? "scale-105 opacity-100" : "opacity-40 hover:opacity-70"}
+              ${isProducerMode && !isSynced ? "opacity-30" : ""}
             `}
+            onClick={() => {
+              const time = parseLrcTimestamp(line.timestamp);
+              onLineClick(time);
+            }}
           >
-            {highlightText(line.content, keywords, onKeywordClick, isActive)}
-          </motion.div>
+            <p className={`
+              text-lg md:text-2xl font-bold leading-relaxed
+              ${isActive 
+                ? "text-transparent bg-clip-text bg-gradient-to-r from-idle-gold via-white to-idle-pink" 
+                : isProducerMode && isSynced 
+                  ? "text-green-400" 
+                  : "text-white"}
+            `}>
+              {highlightText(line.content, keywords, onKeywordClick, isActive)}
+            </p>
+            {isProducerMode && (
+              <span className={`text-xs font-mono mt-1 block ${isSynced ? "text-green-500/50" : "text-gray-600"}`}>
+                {line.timestamp || "WAITING..."}
+              </span>
+            )}
+          </div>
         );
       })}
+      <div className="h-32" /> {/* Bottom spacer */}
     </div>
   );
 }
@@ -200,6 +245,96 @@ export function MissionPlayer({ mission }: { mission: ProcessedMission }) {
   const [offset, setOffset] = useState(mission.offset || 0);
   const [isWordDrawerOpen, setIsWordDrawerOpen] = useState(false);
   const [selectedWord, setSelectedWord] = useState<ProcessedKeyword | null>(null);
+
+  // Producer Mode State
+  const [isProducerMode, setIsProducerMode] = useState(false);
+  const [producerLrcData, setProducerLrcData] = useState<Array<{ timestamp: string; content: string }>>([]);
+  const [editIndex, setEditIndex] = useState(0);
+
+  // Initialize producer data when entering mode
+  useEffect(() => {
+    if (isProducerMode) {
+      // Create a clean slate or copy? 
+      // User says "Overwrite AI generated data", so we start with current content but maybe empty timestamps?
+      // "Repeat this action until the song is finished."
+      // Let's copy structure but maybe clear timestamps?
+      // Or maybe keep them as reference and overwrite as we go?
+      // "Visual feedback: Synced lines green, Unsynced gray."
+      // This implies we should probably clear them or mark them as "pending".
+      // Let's Initialize with empty timestamps for the purpose of "Production".
+      if (producerLrcData.length === 0) {
+        setProducerLrcData(mission.lrcData?.map(l => ({ ...l, timestamp: "" })) || []);
+      }
+      if (playerRef.current) {
+         playerRef.current.setPlaybackRate(0.75);
+         playerRef.current.pauseVideo();
+         playerRef.current.seekTo(0);
+         setEditIndex(0);
+      }
+    } else {
+      if (playerRef.current) {
+        playerRef.current.setPlaybackRate(1);
+      }
+    }
+  }, [isProducerMode]);
+
+  const handleProducerHit = useCallback(() => {
+    if (!isProducerMode || !playerRef.current) return;
+    
+    const time = playerRef.current.getCurrentTime();
+    const formatted = formatLrcTimestamp(time);
+    
+    setProducerLrcData(prev => {
+      const newData = [...prev];
+      if (editIndex < newData.length) {
+        newData[editIndex] = { ...newData[editIndex], timestamp: formatted };
+      }
+      return newData;
+    });
+
+    // Auto advance
+    setEditIndex(prev => Math.min(prev + 1, (producerLrcData.length || 1) - 1));
+    
+    // Feedback
+    // Maybe play a subtle tick sound?
+  }, [isProducerMode, editIndex, producerLrcData.length]);
+
+  const handleProducerUndo = useCallback(() => {
+    if (editIndex > 0) {
+      setEditIndex(prev => prev - 1);
+      setProducerLrcData(prev => {
+        const newData = [...prev];
+        newData[editIndex - 1].timestamp = ""; // Reset previous
+        return newData;
+      });
+      // Seek back slightly?
+      const prevTime = parseLrcTimestamp(producerLrcData[editIndex - 1]?.timestamp || "00:00.00");
+      if (playerRef.current) playerRef.current.seekTo(Math.max(0, prevTime - 2));
+    }
+  }, [editIndex, producerLrcData]);
+
+  // Keyboard listener for HIT (Spacebar)
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (!isProducerMode) return;
+      if (e.code === "Space") {
+        e.preventDefault(); // Prevent scrolling
+        handleProducerHit();
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isProducerMode, handleProducerHit]);
+
+  const handleSaveProducerData = () => {
+    // Check for gaps and interpolate
+    const interpolated = interpolateTimestamps(producerLrcData);
+    
+    updateMission(mission.id, { lrcData: interpolated });
+    setProducerLrcData(interpolated); // Update local state to show result
+    setIsProducerMode(false); // Exit mode
+    alert("舞台設定已更新！(包含自動補間)");
+  };
 
   const keywords = useMemo(() => mission.keywords.map((k) => k.word), [mission.keywords]);
 
@@ -406,7 +541,25 @@ export function MissionPlayer({ mission }: { mission: ProcessedMission }) {
     setSelectedWord(k);
   };
 
+  // Sync state with parent (LyricsScroller active index logic)
+  // We need to pass producerLrcData to LyricsScroller
+  
+  // Also need to handle seek when clicking lines in producer mode - handled by existing onLineClick but using producer data timestamps
+  
+  // Override onLineClick for Producer Mode to just seek, not edit?
+  // Actually, if I click a line in Producer Mode, I might want to "jump" to that line to edit it?
+  // Current logic: onClick -> seekTo(time).
+  // If timestamp is empty, seekTo(0).
+  // Ideally, clicking a line in Producer Mode should set `editIndex` to that line.
   const handleLineClick = (time: number) => {
+    if (isProducerMode) {
+      // Find index by time? No, time might be 0.
+      // Better to pass index from LyricsScroller.
+      // But LyricsScroller interface only passes time.
+      // Let's assume user just uses the controls for now.
+      // Or we can just let it seek if it has a timestamp.
+    }
+    
     // Adjust seek time by offset
     // If offset is +0.5s, it means video time + 0.5 = lyric time
     // So video time = lyric time - 0.5
@@ -490,8 +643,9 @@ export function MissionPlayer({ mission }: { mission: ProcessedMission }) {
                      {/* Decorative Spotlight Beam */}
                      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-2xl h-full bg-gradient-to-b from-idle-pink/5 via-transparent to-transparent pointer-events-none" />
                      
-                     {/* Sync Offset Tool */}
-                     <div className="absolute top-4 right-4 z-30 flex items-center gap-2 bg-black/60 backdrop-blur-md rounded-full px-3 py-1.5 border border-white/10 group hover:border-idle-gold/50 transition-colors">
+                     {/* Sync Offset Tool - Hide in Producer Mode */}
+                     {!isProducerMode && (
+                       <div className="absolute top-4 right-4 z-30 flex items-center gap-2 bg-black/60 backdrop-blur-md rounded-full px-3 py-1.5 border border-white/10 group hover:border-idle-gold/50 transition-colors">
                         <Clock size={14} className="text-gray-400 group-hover:text-idle-gold" />
                         <button 
                           onClick={() => setOffset(prev => Math.round((prev - 0.5) * 10) / 10)}
@@ -516,7 +670,73 @@ export function MissionPlayer({ mission }: { mission: ProcessedMission }) {
                         >
                           <Save size={14} />
                         </button>
+                        
+                        {/* Toggle Producer Mode */}
+                        <div className="w-px h-3 bg-white/20 mx-1" />
+                        <button
+                          onClick={() => {
+                            if (confirm("進入「製作人同步模式」？這將允許你重新錄製歌詞時間軸。")) {
+                              setIsProducerMode(true);
+                            }
+                          }}
+                          className="p-1 hover:text-idle-green text-gray-300 transition-colors"
+                          title="製作人同步模式"
+                        >
+                          <Edit size={14} />
+                        </button>
                      </div>
+                     )}
+
+                     {/* Producer Mode Overlay Controls */}
+                     {isProducerMode && (
+                        <div className="absolute top-4 inset-x-4 z-40 flex items-center justify-between bg-black/80 backdrop-blur-xl rounded-xl p-3 border border-idle-green/30 animate-in fade-in slide-in-from-top-4">
+                          <div className="flex items-center gap-3">
+                             <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse shadow-[0_0_10px_red]" />
+                             <span className="text-sm font-bold text-idle-green tracking-wide">PRODUCER MODE (0.75x)</span>
+                          </div>
+                          
+                          <div className="flex items-center gap-4">
+                            <button 
+                              onClick={handleProducerUndo}
+                              className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-gray-800 hover:bg-gray-700 text-xs font-bold transition-colors border border-white/5"
+                            >
+                              <Undo size={14} />
+                              UNDO ({editIndex})
+                            </button>
+                            <button 
+                              onClick={handleSaveProducerData}
+                              className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-idle-gold text-black hover:bg-idle-yellow text-xs font-bold transition-colors shadow-lg shadow-idle-gold/20"
+                            >
+                              <Save size={14} />
+                              SAVE STAGE
+                            </button>
+                            <button 
+                              onClick={() => {
+                                setIsProducerMode(false);
+                                setProducerLrcData([]);
+                              }}
+                              className="p-1.5 hover:bg-white/10 rounded-full transition-colors"
+                            >
+                              <X size={16} />
+                            </button>
+                          </div>
+                        </div>
+                     )}
+                     
+                     {/* Producer HIT Button (Centered Overlay) */}
+                     {isProducerMode && (
+                       <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-40">
+                          <button
+                            onClick={handleProducerHit}
+                            className="group relative flex flex-col items-center justify-center w-32 h-32 rounded-full bg-gradient-to-br from-gray-900 to-black border-4 border-gray-800 active:border-idle-green active:scale-95 transition-all shadow-2xl"
+                          >
+                             <div className="absolute inset-0 rounded-full bg-idle-green/20 opacity-0 group-active:opacity-100 transition-opacity blur-xl" />
+                             <Music size={32} className="text-gray-400 group-active:text-idle-green transition-colors mb-1" />
+                             <span className="text-2xl font-black text-white tracking-widest group-active:text-idle-green">HIT</span>
+                             <span className="text-[10px] text-gray-500 font-mono mt-1">SPACEBAR</span>
+                          </button>
+                       </div>
+                     )}
 
                      {mission.lrcData && mission.lrcData.length > 0 ? (
                         <LyricsScroller 
@@ -526,6 +746,8 @@ export function MissionPlayer({ mission }: { mission: ProcessedMission }) {
                             keywords={mission.keywords}
                             onKeywordClick={handleKeywordClick}
                             onLineClick={handleLineClick}
+                            isProducerMode={isProducerMode}
+                            producerLrcData={producerLrcData}
                         />
                      ) : (
                          <div className="p-8 text-center text-gray-400 mt-10">
