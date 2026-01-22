@@ -322,8 +322,6 @@ export async function POST(req: Request) {
       },
     });
 
-    const prompt = `${SYSTEM_PROMPT}\n\nUser Proficiency (CEFR): ${proficiency}\nContent Type: ${type}\n\nTEXT:\n${rawText}`;
-    
     const genStart = Date.now();
     console.log("[ProcessContent] Starting generation...");
     const result = await model.generateContent(prompt);
