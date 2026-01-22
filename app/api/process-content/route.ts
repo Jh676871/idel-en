@@ -342,6 +342,7 @@ export async function POST(req: Request) {
             videoId,
             mediaUrl,
             difficulty: masteryAverage || "auto",
+            proficiency,
             lrcData: coerced.lrcData || [] // Ensure lrcData exists
         };
         return NextResponse.json({ success: true, data: fullResult });

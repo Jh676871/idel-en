@@ -4,7 +4,13 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useLearning } from "@/context/LearningContext";
 import { Loader2, Sparkles, CheckCircle, XCircle } from "lucide-react";
-import { ProcessedMission } from "@/types";
+import { ProcessedMission, CefrLevel } from "@/types";
+
+function difficultyFromCefr(cefr: CefrLevel): 1 | 2 | 3 {
+  if (cefr === "A2") return 1;
+  if (cefr === "B1") return 2;
+  return 3;
+}
 
 export function AdminIngest() {
   const [isOpen, setIsOpen] = useState(false);
@@ -70,7 +76,7 @@ export function AdminIngest() {
           type: "lyric",
           rawText: missionData.title, 
           mediaUrl: missionData.mediaUrl,
-          difficulty: "auto", // Default
+          difficulty: difficultyFromCefr((missionData.proficiency as CefrLevel) || "A2"),
         },
         proficiency: missionData.proficiency,
         title: missionData.title,
