@@ -31,7 +31,6 @@ const notoSansTc = Noto_Sans_TC({
 export const metadata: Metadata = {
   title: "NEVERLAND 翻譯學院",
   description: "和 I-DLE 一起練英文（翻譯官模式）",
-  manifest: "/manifest.json",
 };
 
 export const viewport: Viewport = {
