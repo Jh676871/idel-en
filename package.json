@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
+    "@supabase/supabase-js": "^2.91.0",
     "@types/react-youtube": "^7.6.2",
     "clsx": "^2.1.1",
     "framer-motion": "^12.25.0",

@@ -1,6 +1,8 @@
 import { GoogleGenerativeAI, Schema, SchemaType } from "@google/generative-ai";
 import { NextResponse } from "next/server";
 import { AI_CONFIG } from "@/config/ai-config";
+import { supabase } from "@/lib/supabase";
+import type { ProcessedMission, CefrLevel } from "@/types";
 
 const genAI = new GoogleGenerativeAI(AI_CONFIG.apiKey);
 
@@ -58,6 +60,12 @@ const HANGUL_RE = /[\u1100-\u11FF\u3130-\u318F\uAC00-\uD7AF]/;
 
 function containsHangul(value: string) {
   return HANGUL_RE.test(value);
+}
+
+function difficultyFromCefr(cefr: string): 1 | 2 | 3 {
+  if (cefr === "A2") return 1;
+  if (cefr === "B1") return 2;
+  return 3;
 }
 
 function coerceProcessResult(value: unknown): ProcessResult | null {
@@ -393,7 +401,42 @@ ${JSON.stringify(coerced)}`;
       return NextResponse.json({ error: `Model output invalid: ${repairedCheck.reason}` }, { status: 502 });
     }
 
-    return NextResponse.json({ proficiency, result: repairedCoerced });
+    // Construct ProcessedMission
+    const newMissionId = crypto.randomUUID();
+    const newMission: ProcessedMission = {
+        id: newMissionId,
+        createdAt: Date.now(),
+        source: {
+          id: videoId || `manual-${Date.now()}`,
+          title: repairedCoerced.title,
+          type: (type as any) || "lyric",
+          rawText: rawText,
+          mediaUrl: mediaUrl || undefined,
+          difficulty: difficultyFromCefr(proficiency),
+        },
+        proficiency: proficiency as CefrLevel,
+        title: repairedCoerced.title,
+        keywords: repairedCoerced.keywords,
+        challenges: repairedCoerced.challenges,
+        lrcData: repairedCoerced.lrcData,
+        status: "new"
+    };
+
+    // Save to Supabase
+    const { error: dbError } = await supabase
+        .from('missions')
+        .insert({
+            id: newMission.id,
+            title: newMission.title,
+            data: newMission
+        });
+
+    if (dbError) {
+        console.error("Supabase Error:", dbError);
+        return NextResponse.json({ error: "Failed to save to cloud database: " + dbError.message }, { status: 500 });
+    }
+
+    return NextResponse.json({ success: true, mission: newMission });
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : "Failed to process content";
     return NextResponse.json(

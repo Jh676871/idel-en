@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { UserProgress, Vocabulary, ProcessedMission, CefrLevel } from '@/types';
+import { supabase } from '@/lib/supabase';
 
 function parseJson<T>(value: string | null): T | null {
   if (!value) return null;
@@ -142,16 +143,37 @@ export function LearningProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     let cancelled = false;
 
-    Promise.resolve().then(() => {
+    const loadData = async () => {
+      // 1. Load Local State (Progress, Tickets, etc.)
+      const loaded = loadLearningStateFromStorage();
+      
       if (cancelled) return;
 
-      const loaded = loadLearningStateFromStorage();
       setProgress(loaded.progress);
       setTickets(loaded.tickets);
-      setMissions(loaded.missions);
       setCurrentMission(loaded.currentMission);
+
+      // 2. Load Cloud Missions (Supabase)
+      const { data: cloudMissions, error } = await supabase
+        .from('missions')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (cancelled) return;
+
+      if (cloudMissions && !error) {
+        console.log("Loaded missions from cloud:", cloudMissions.length);
+        const parsedMissions = cloudMissions.map(m => m.data as ProcessedMission);
+        setMissions(parsedMissions);
+      } else {
+        console.warn("Failed to load cloud missions, falling back to local:", error);
+        setMissions(loaded.missions);
+      }
+      
       setHasLoaded(true);
-    });
+    };
+
+    loadData();
 
     return () => {
       cancelled = true;
@@ -308,14 +330,37 @@ export function LearningProvider({ children }: { children: ReactNode }) {
     setMissions(prev => [mission, ...prev]);
   };
 
-  const updateMission = (missionId: string, updates: Partial<ProcessedMission>) => {
-    setMissions(prev => prev.map(m => m.id === missionId ? { ...m, ...updates } : m));
+  const updateMission = async (missionId: string, updates: Partial<ProcessedMission>) => {
+    // 1. Optimistic Update
+    let updatedMission: ProcessedMission | undefined;
+    
+    setMissions(prev => prev.map(m => {
+      if (m.id === missionId) {
+        updatedMission = { ...m, ...updates };
+        return updatedMission;
+      }
+      return m;
+    }));
+    
     setCurrentMission(prev => (prev?.id === missionId ? { ...prev, ...updates } : prev));
+
+    // 2. Cloud Sync
+    if (updatedMission) {
+      const { error } = await supabase
+        .from('missions')
+        .update({ data: updatedMission })
+        .eq('id', missionId);
+        
+      if (error) console.error("Failed to sync mission update to cloud:", error);
+    }
   };
 
-  const removeMission = (missionId: string) => {
+  const removeMission = async (missionId: string) => {
     setMissions(prev => prev.filter(m => m.id !== missionId));
     setCurrentMission(prev => (prev?.id === missionId ? null : prev));
+    
+    const { error } = await supabase.from('missions').delete().eq('id', missionId);
+    if (error) console.error("Failed to delete mission from cloud:", error);
   };
 
   const getAverageWordMastery = () => {

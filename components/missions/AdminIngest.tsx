@@ -6,12 +6,6 @@ import { useLearning } from "@/context/LearningContext";
 import { Loader2, Sparkles, CheckCircle, XCircle } from "lucide-react";
 import { ProcessedMission, CefrLevel } from "@/types";
 
-function difficultyFromCefr(cefr: CefrLevel): 1 | 2 | 3 {
-  if (cefr === "A2") return 1;
-  if (cefr === "B1") return 2;
-  return 3;
-}
-
 export function AdminIngest() {
   const [isOpen, setIsOpen] = useState(false);
   const [url, setUrl] = useState("");
@@ -55,9 +49,13 @@ export function AdminIngest() {
       }
 
       // Transform into ProcessedMission
-      const missionData = data.data;
+      const mission = data.mission;
       
-      await processMissionData(missionData);
+      addMission(mission);
+      setStatus("success");
+      setMessage(`新舞台 "${mission.title}" 已準備就緒並儲存至雲端！`);
+      setUrl("");
+      setManualLyrics("");
     } catch (err: any) {
       console.error(err);
       setStatus("error");
@@ -65,53 +63,6 @@ export function AdminIngest() {
     } finally {
       setLoading(false);
     }
-  };
-
-
-
-
-  const processMissionData = async (missionData: any) => {
-      const newMission: ProcessedMission = {
-        id: `mission-${Date.now()}`,
-        createdAt: Date.now(),
-        source: {
-          id: missionData.videoId,
-          title: missionData.title,
-          type: "lyric",
-          rawText: missionData.title, 
-          mediaUrl: missionData.mediaUrl,
-          difficulty: difficultyFromCefr((missionData.proficiency as CefrLevel) || "A2"),
-        },
-        proficiency: missionData.proficiency,
-        title: missionData.title,
-        keywords: missionData.keywords,
-        challenges: {
-          fillInTheBlank: {
-            sentence: missionData.keywords?.[0]?.example || "Example sentence",
-            answer: missionData.keywords?.[0]?.word || "word",
-          },
-          definitionMatching: {
-            pairs: missionData.keywords?.slice(0, 3).map((k: any) => ({
-              word: k.word,
-              definition: k.definition,
-            })) || [],
-          },
-          chatChallenge: {
-            question: missionData.challenges?.chatChallenge?.question || `What is the main theme of ${missionData.title}?`,
-          },
-        },
-        lrcData: missionData.lrcData,
-        quiz: missionData.quiz,
-        mentor: missionData.mentor,
-        scenarioDialogue: missionData.scenarioDialogue,
-        status: "new",
-      };
-
-      addMission(newMission);
-      setStatus("success");
-      setMessage(`新舞台 "${missionData.title}" 已準備就緒！`);
-      setUrl("");
-      setManualLyrics("");
   };
 
   return (
