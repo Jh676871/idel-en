@@ -109,6 +109,7 @@ interface LearningContextType {
   // Missions
   missions: ProcessedMission[];
   addMission: (mission: ProcessedMission) => void;
+  updateMission: (missionId: string, updates: Partial<ProcessedMission>) => void;
   removeMission: (missionId: string) => void;
   currentMission: ProcessedMission | null;
   setCurrentMission: (mission: ProcessedMission | null) => void;
@@ -307,6 +308,11 @@ export function LearningProvider({ children }: { children: ReactNode }) {
     setMissions(prev => [mission, ...prev]);
   };
 
+  const updateMission = (missionId: string, updates: Partial<ProcessedMission>) => {
+    setMissions(prev => prev.map(m => m.id === missionId ? { ...m, ...updates } : m));
+    setCurrentMission(prev => (prev?.id === missionId ? { ...prev, ...updates } : prev));
+  };
+
   const removeMission = (missionId: string) => {
     setMissions(prev => prev.filter(m => m.id !== missionId));
     setCurrentMission(prev => (prev?.id === missionId ? null : prev));
@@ -342,6 +348,7 @@ export function LearningProvider({ children }: { children: ReactNode }) {
       incrementChatCount,
       missions,
       addMission,
+      updateMission,
       removeMission,
       currentMission,
       setCurrentMission,

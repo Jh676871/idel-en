@@ -6,7 +6,7 @@ import YouTube, { YouTubeEvent, YouTubePlayer } from "react-youtube";
 import { useLearning } from "@/context/LearningContext";
 import type { ProcessedMission, ProcessedKeyword } from "@/types";
 import { ChatInterface } from "@/components/chat/ChatInterface";
-import { Loader2, Menu, X, Play, Pause, Repeat, BookOpen, Mic, Volume2 } from "lucide-react";
+import { Loader2, Menu, X, Play, Pause, Repeat, BookOpen, Mic, Volume2, Clock, Plus, Minus, Save } from "lucide-react";
 
 type Stage = "spotlight" | "practice" | "real_chat" | "review";
 
@@ -73,12 +73,14 @@ function highlightText(
 function LyricsScroller({ 
   lrcData, 
   currentTime, 
+  offset,
   keywords, 
   onKeywordClick,
   onLineClick 
 }: { 
   lrcData: Array<{ timestamp: string; content: string }>; 
   currentTime: number;
+  offset: number;
   keywords: ProcessedKeyword[];
   onKeywordClick: (k: ProcessedKeyword) => void;
   onLineClick: (time: number) => void;
@@ -88,12 +90,13 @@ function LyricsScroller({
 
   const activeIndex = useMemo(() => {
     // Find the last line that has started
+    const adjustedTime = currentTime + offset;
     for (let i = lrcData.length - 1; i >= 0; i--) {
       const time = parseLrcTimestamp(lrcData[i].timestamp);
-      if (currentTime >= time) return i;
+      if (adjustedTime >= time) return i;
     }
     return -1;
-  }, [lrcData, currentTime]);
+  }, [lrcData, currentTime, offset]);
 
   useEffect(() => {
     if (activeRef.current) {
@@ -177,7 +180,7 @@ function pickReview(member: string, score: number, total: number) {
 }
 
 export function MissionPlayer({ mission }: { mission: ProcessedMission }) {
-  const { wordBank, practiceWord, setCurrentMission, addXp } = useLearning();
+  const { wordBank, practiceWord, setCurrentMission, updateMission, addXp } = useLearning();
   const [stage, setStage] = useState<Stage>("spotlight");
   const [practiceStep, setPracticeStep] = useState<0 | 1 | 2 | 3>(3);
   const [fibInput, setFibInput] = useState("");
@@ -194,6 +197,7 @@ export function MissionPlayer({ mission }: { mission: ProcessedMission }) {
   // New State for Video & Lyrics
   const playerRef = useRef<YouTubePlayer | null>(null);
   const [currentTime, setCurrentTime] = useState(0);
+  const [offset, setOffset] = useState(mission.offset || 0);
   const [isWordDrawerOpen, setIsWordDrawerOpen] = useState(false);
   const [selectedWord, setSelectedWord] = useState<ProcessedKeyword | null>(null);
 
@@ -242,15 +246,27 @@ export function MissionPlayer({ mission }: { mission: ProcessedMission }) {
     prevMasteryRef.current = nextMap;
   }, [keywords, wordBank]);
 
-  // Video Timer
+  // Video Timer with high frequency
   useEffect(() => {
-    const timer = setInterval(() => {
+    let animationFrameId: number;
+    
+    const update = () => {
       if (playerRef.current?.getCurrentTime) {
         setCurrentTime(playerRef.current.getCurrentTime());
       }
-    }, 200);
-    return () => clearInterval(timer);
+      animationFrameId = requestAnimationFrame(update);
+    };
+    
+    // Start loop
+    animationFrameId = requestAnimationFrame(update);
+    
+    return () => cancelAnimationFrame(animationFrameId);
   }, []);
+
+  const handleSaveOffset = () => {
+    updateMission(mission.id, { offset });
+    alert(`已儲存時間校正: ${offset > 0 ? "+" : ""}${offset}s`);
+  };
 
   const [speechState, setSpeechState] = useState<"idle" | "listening" | "processing" | "result">("idle");
   const [transcript, setTranscript] = useState("");
@@ -391,7 +407,11 @@ export function MissionPlayer({ mission }: { mission: ProcessedMission }) {
   };
 
   const handleLineClick = (time: number) => {
-    playerRef.current?.seekTo(time, true);
+    // Adjust seek time by offset
+    // If offset is +0.5s, it means video time + 0.5 = lyric time
+    // So video time = lyric time - 0.5
+    const seekTime = Math.max(0, time - offset);
+    playerRef.current?.seekTo(seekTime, true);
     playerRef.current?.playVideo();
   };
 
@@ -470,10 +490,39 @@ export function MissionPlayer({ mission }: { mission: ProcessedMission }) {
                      {/* Decorative Spotlight Beam */}
                      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-2xl h-full bg-gradient-to-b from-idle-pink/5 via-transparent to-transparent pointer-events-none" />
                      
+                     {/* Sync Offset Tool */}
+                     <div className="absolute top-4 right-4 z-30 flex items-center gap-2 bg-black/60 backdrop-blur-md rounded-full px-3 py-1.5 border border-white/10 group hover:border-idle-gold/50 transition-colors">
+                        <Clock size={14} className="text-gray-400 group-hover:text-idle-gold" />
+                        <button 
+                          onClick={() => setOffset(prev => Math.round((prev - 0.5) * 10) / 10)}
+                          className="p-1 hover:text-idle-pink text-gray-300 transition-colors"
+                        >
+                          <Minus size={14} />
+                        </button>
+                        <span className="text-xs font-mono font-bold min-w-[3ch] text-center text-white">
+                          {offset > 0 ? "+" : ""}{offset}s
+                        </span>
+                        <button 
+                          onClick={() => setOffset(prev => Math.round((prev + 0.5) * 10) / 10)}
+                          className="p-1 hover:text-idle-pink text-gray-300 transition-colors"
+                        >
+                          <Plus size={14} />
+                        </button>
+                        <div className="w-px h-3 bg-white/20 mx-1" />
+                        <button 
+                          onClick={handleSaveOffset}
+                          className="p-1 hover:text-idle-gold text-gray-300 transition-colors"
+                          title="儲存校正"
+                        >
+                          <Save size={14} />
+                        </button>
+                     </div>
+
                      {mission.lrcData && mission.lrcData.length > 0 ? (
                         <LyricsScroller 
                             lrcData={mission.lrcData} 
-                            currentTime={currentTime} 
+                            currentTime={currentTime}
+                            offset={offset} 
                             keywords={mission.keywords}
                             onKeywordClick={handleKeywordClick}
                             onLineClick={handleLineClick}

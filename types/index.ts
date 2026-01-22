@@ -78,4 +78,5 @@ export interface ProcessedMission {
   };
   mentor?: string; // Assigned member mentor
   status?: "locked" | "new" | "completed"; // Mission progress
+  offset?: number; // Sync offset in seconds
 }

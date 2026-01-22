@@ -15,6 +15,10 @@ Rules (must follow):
 - **Hangul Policy**:
   - **ALLOW** Hangul in the song title or lyrics reference if necessary.
   - **FORBID** Hangul in Keywords, Definitions, and Quiz sections.
+- **Lyrics Sync**:
+  - Please analyze the lyrics structure carefully.
+  - **Prelude Handling**: Note that the music video usually has an intro/prelude. Please ensure 00:00 starts from the actual first line of lyrics, or reserve appropriate prelude time (e.g., 00:10.00) based on common music structure if you can infer it.
+  - Output \`lrcData\` with accurate timestamps ([mm:ss.xx]).
 - Extract 5 English learning keywords appropriate for the user's CEFR level.
 - For each keyword provide: 
   - definition (English, or English/TC mixed if helpful)
