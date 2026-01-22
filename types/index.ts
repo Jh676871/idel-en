@@ -35,6 +35,8 @@ export interface ProcessedKeyword {
   phonetic: string;
   example: string;
   cefr: CefrLevel;
+  funny_definition?: string;
+  star_comment?: string;
 }
 
 export interface ProcessedChallenges {
