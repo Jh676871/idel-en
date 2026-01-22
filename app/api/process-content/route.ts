@@ -154,6 +154,9 @@ function safeJsonParse(text: string) {
 }
 
 export async function POST(req: Request) {
+  const startTime = Date.now();
+  console.log(`[ProcessContent] Request started at ${new Date(startTime).toISOString()}`);
+
   try {
     const adminHeader = (req.headers.get("x-admin-token") || "").trim();
     const adminToken = (process.env.ADMIN_TOKEN || "").trim();
@@ -264,9 +267,14 @@ export async function POST(req: Request) {
     });
 
     const prompt = `${SYSTEM_PROMPT}\n\nUser Proficiency (CEFR): ${proficiency}\nContent Type: ${type}\n\nTEXT:\n${rawText}`;
+    
+    const genStart = Date.now();
+    console.log("[ProcessContent] Starting generation...");
     const result = await model.generateContent(prompt);
     const response = await result.response;
     const text = response.text();
+    console.log(`[ProcessContent] Generation took ${Date.now() - genStart}ms`);
+
     const json = safeJsonParse(text);
     const coerced = coerceProcessResult(json);
     if (!coerced) {
@@ -277,6 +285,8 @@ export async function POST(req: Request) {
     if (check.ok) {
       return NextResponse.json({ proficiency, result: coerced });
     }
+    
+    console.warn(`[ProcessContent] Validation failed: ${check.reason}. Triggering repair...`);
 
     const repairPrompt = `Rewrite the following JSON to strictly satisfy the Rules.
 - Output must be 100% English (no Korean/Hangul).
@@ -290,8 +300,12 @@ Content Type: ${type}
 JSON TO REWRITE:
 ${JSON.stringify(coerced)}`;
 
+    const repairStart = Date.now();
+    console.log("[ProcessContent] Starting repair...");
     const repaired = await repairModel.generateContent(repairPrompt);
     const repairedText = (await repaired.response).text();
+    console.log(`[ProcessContent] Repair took ${Date.now() - repairStart}ms`);
+    
     const repairedJson = safeJsonParse(repairedText);
     const repairedCoerced = coerceProcessResult(repairedJson);
     if (!repairedCoerced) {
