@@ -416,7 +416,10 @@ ${JSON.stringify(coerced)}`;
         },
         proficiency: proficiency as CefrLevel,
         title: repairedCoerced.title,
-        keywords: repairedCoerced.keywords,
+        keywords: repairedCoerced.keywords.map((k: any) => ({
+            ...k,
+            cefr: k.cefr as CefrLevel
+        })),
         challenges: repairedCoerced.challenges,
         lrcData: repairedCoerced.lrcData,
         status: "new"
