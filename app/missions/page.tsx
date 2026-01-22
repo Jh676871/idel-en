@@ -4,7 +4,7 @@ import { Navbar } from "@/components/Navbar";
 import { useLearning } from "@/context/LearningContext";
 import Link from "next/link";
 import { AdminIngest } from "@/components/missions/AdminIngest";
-import { Play, Lock, CheckCircle, Star, Music2, User } from "lucide-react";
+import { Play, Lock, CheckCircle, Star, Music2, User, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export default function MissionsPage() {
