@@ -322,12 +322,12 @@ export async function POST(req: Request) {
             return NextResponse.json({ 
                 error: "manual_input_needed", 
                 message: "舞台資料讀取中遇到了一點亂流... 正在切換至 AI 智慧檢索模式！如果連 AI 也找不到，請幫忙手動貼上歌詞吧！" 
-            }, { status: 422 });
+            }, { status: 200 });
         }
     }
 
     if (data.error === "manual_input_needed") {
-      return NextResponse.json({ error: "manual_input_needed", message: data.message }, { status: 422 });
+      return NextResponse.json({ error: "manual_input_needed", message: data.message }, { status: 200 });
     }
 
     return NextResponse.json({ 

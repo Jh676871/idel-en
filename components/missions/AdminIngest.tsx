@@ -33,13 +33,14 @@ export function AdminIngest() {
 
       const data = await res.json();
 
+      if (data.error === "manual_input_needed") {
+        setStatus("manual_input_needed");
+        setMessage("舞台資料讀取中遇到了一點亂流... 正在切換至 AI 智慧檢索模式！如果連 AI 也找不到，請幫忙手動貼上歌詞吧！");
+        setLoading(false);
+        return;
+      }
+
       if (!res.ok) {
-        if (data.error === "manual_input_needed") {
-          setStatus("manual_input_needed");
-          setMessage("舞台資料讀取中遇到了一點亂流... 正在切換至 AI 智慧檢索模式！如果連 AI 也找不到，請幫忙手動貼上歌詞吧！");
-          setLoading(false);
-          return;
-        }
         throw new Error(data.error || "Failed to ingest");
       }
 
