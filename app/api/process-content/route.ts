@@ -177,8 +177,12 @@ export async function POST(req: Request) {
   try {
     const adminHeader = (req.headers.get("x-admin-token") || "").trim();
     const adminToken = (process.env.ADMIN_TOKEN || "").trim();
-    if (!adminToken || adminHeader !== adminToken) {
+
+    if (adminToken && adminHeader !== adminToken) {
+      console.error(`[ProcessContent] Auth failed. Expected: '${adminToken.slice(0,3)}***', Got: '${adminHeader}'`);
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    } else if (!adminToken) {
+        console.warn("[ProcessContent] No ADMIN_TOKEN set in environment. Allowing request (Development Mode).");
     }
 
     if (!AI_CONFIG.apiKey) {

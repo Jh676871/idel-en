@@ -21,6 +21,7 @@ export function AdminIngest() {
   const [message, setMessage] = useState("");
   const [loadingText, setLoadingText] = useState("正在連線至 YouTube 舞台...");
   const [manualLyrics, setManualLyrics] = useState("");
+  const [adminToken, setAdminToken] = useState("");
   const { addMission } = useLearning();
 
   const handleIngest = async () => {
@@ -35,7 +36,10 @@ export function AdminIngest() {
       // Use the refactored process-content API
       const res = await fetch("/api/process-content", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+            "Content-Type": "application/json",
+            "x-admin-token": adminToken.trim() 
+        },
         body: JSON.stringify({ 
             url, 
             rawText: manualLyrics,
@@ -131,6 +135,15 @@ export function AdminIngest() {
             <h3 className="text-idle-pink font-bold font-orbitron mb-4">CONTENT HUB INGESTION (MANUAL MODE)</h3>
             
             <div className="flex flex-col gap-4 mb-4">
+              <input
+                type="password"
+                value={adminToken}
+                onChange={(e) => setAdminToken(e.target.value)}
+                placeholder="Admin Token (Optional if not set in backend)"
+                className="w-full bg-black/50 border border-white/20 rounded-lg px-4 py-2 text-white placeholder-gray-500 focus:outline-none focus:border-idle-pink transition-colors text-sm"
+                disabled={loading}
+              />
+
               <input
                 type="text"
                 value={url}
